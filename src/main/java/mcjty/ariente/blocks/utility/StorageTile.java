@@ -1,5 +1,11 @@
 package mcjty.ariente.blocks.utility;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -23,7 +29,15 @@ import mcjty.hologui.api.IGuiTile;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
+import mcjty.lib.container.IItemHandler;
+import mcjty.lib.container.IItemHandlerModifiable;
+import mcjty.lib.container.IndexedStorage;
+import mcjty.lib.network.ClientNetworking;
 import mcjty.lib.varia.ItemStackList;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -48,13 +62,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.network.PacketDistributor;
-
-import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
-import static mcjty.lib.builder.TooltipBuilder.header;
-import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEquipment, IKeyCardSlot, ILockTarget, IStorageTile {
 
@@ -380,7 +387,7 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
             if (mouseOver instanceof BlockHitResult) {
                 int index = getSlot((BlockHitResult) mouseOver, world);
                 if (index >= 0) {
-                    PacketDistributor.sendToServer(new PacketClickStorage(pos, index));
+                    ClientNetworking.sendToServer(new PacketClickStorage(pos, index));
                 }
             }
         }
@@ -559,7 +566,92 @@ public class StorageTile extends ArienteBlockEntity implements IGuiTile, ICityEq
         }
     }
 
-    private class StorageItemHandler implements IItemHandlerModifiable {
+    private boolean storageTransaction;
+
+    @Override
+    public void markDirtyClient() {
+        if (!storageTransaction) super.markDirtyClient();
+    }
+
+    private record InventorySnapshot(List<ItemStack> stacks, int[] counts, int[] totals) {
+    }
+
+    private class StorageItemHandler implements IItemHandlerModifiable, IndexedStorage<ItemVariant> {
+
+        private final SnapshotParticipant<InventorySnapshot> journal = new SnapshotParticipant<>() {
+
+            @Override
+            protected InventorySnapshot createSnapshot() {
+                List<ItemStack> copies = new ArrayList<>();
+                for (int i = 0; i < stacks.size(); i++) copies.add(stacks.get(i).copy());
+                return new InventorySnapshot(copies, counts.clone(), totals.clone());
+            }
+
+            @Override
+            protected void readSnapshot(InventorySnapshot snapshot) {
+                for (int i = 0; i < stacks.size(); i++) stacks.set(i, snapshot.stacks().get(i));
+                System.arraycopy(snapshot.counts(), 0, counts, 0, counts.length);
+                System.arraycopy(snapshot.totals(), 0, totals, 0, totals.length);
+            }
+
+            @Override
+            protected void onFinalCommit() {
+                markDirtyClient();
+            }
+        };
+
+        @Override
+        public int size() {
+            return getSlots();
+        }
+
+        @Override
+        public ItemVariant getResource(int index) {
+            return ItemVariant.of(getStackInSlot(index));
+        }
+
+        @Override
+        public long getAmountAsLong(int index) {
+            return getStackInSlot(index).getCount();
+        }
+
+        @Override
+        public long getCapacityAsLong(int index, ItemVariant resource) {
+            return getSlotLimit(index);
+        }
+
+        @Override
+        public boolean isValid(int index, ItemVariant resource) {
+            return isItemValid(index, resource.toStack());
+        }
+
+        @Override
+        public long insert(int index, ItemVariant resource, long amount, TransactionContext transaction) {
+            StoragePreconditions.notBlankNotNegative(resource, amount);
+            ItemStack incoming = resource.toStack((int) Math.min(Integer.MAX_VALUE, amount));
+            long inserted = amount - insertItem(index, incoming, true).getCount();
+            if (inserted == 0) return 0;
+            journal.updateSnapshots(transaction);
+            storageTransaction = true;
+            try {
+                return amount - insertItem(index, incoming, false).getCount();
+            } finally {
+                storageTransaction = false;
+            }
+        }
+
+        @Override
+        public long extract(int index, ItemVariant resource, long amount, TransactionContext transaction) {
+            StoragePreconditions.notBlankNotNegative(resource, amount);
+            if (!resource.matches(getStackInSlot(index)) || amount == 0 || locked) return 0;
+            journal.updateSnapshots(transaction);
+            storageTransaction = true;
+            try {
+                return extractItem(index, (int) Math.min(Integer.MAX_VALUE, amount), false).getCount();
+            } finally {
+                storageTransaction = false;
+            }
+        }
 
         @Override
         public int getSlots() {

@@ -6,13 +6,13 @@ import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.display.DisplayGeometry;
 import mcjty.ariente.display.InstalledModule;
 import mcjty.ariente.display.PacketDisplayGesture;
+import mcjty.lib.network.ClientNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 /** Local drag preview; authoritative state changes only when the server accepts the release. */
 public class DisplayModuleDrag {
@@ -37,7 +37,7 @@ public class DisplayModuleDrag {
     private static void send(PacketDisplayGesture.Action action) {
         Minecraft mc = Minecraft.getInstance();
         if (gesture != null && mc.getConnection() != null && mc.player != null) {
-            PacketDistributor.sendToServer(new PacketDisplayGesture(gesture.source.getBlockPos(), gesture.module.id(),
+            ClientNetworking.sendToServer(new PacketDisplayGesture(gesture.source.getBlockPos(), gesture.module.id(),
                     gesture.ticket, action, mc.player.getYRot(), mc.player.getXRot(), gesture.dragged, gesture.valid));
         }
     }

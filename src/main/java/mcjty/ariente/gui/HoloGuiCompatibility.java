@@ -4,11 +4,11 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.multipart.MultipartTE;
+import mcjty.hologui.HoloGui;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.IHoloGuiHandler;
 import mcjty.lib.varia.Logging;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.fml.InterModComms;
 
 public class HoloGuiCompatibility {
 
@@ -19,7 +19,7 @@ public class HoloGuiCompatibility {
             return;
         }
         registered = true;
-        InterModComms.sendTo("hologui", "getHoloHandler", GetHoloHandler::new);
+        new GetHoloHandler().apply(HoloGui.guiHandler);
     }
 
     public static class GetHoloHandler implements Function<IHoloGuiHandler, Void> {

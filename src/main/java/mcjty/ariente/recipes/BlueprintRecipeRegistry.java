@@ -1,5 +1,7 @@
 package mcjty.ariente.recipes;
 
+import static mcjty.ariente.Ariente.MODID;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -8,7 +10,7 @@ import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.config.RecipeConfiguration;
 import mcjty.ariente.setup.Registration;
 import mcjty.ariente.varia.WeightedRandom;
-import net.minecraft.core.registries.BuiltInRegistries;
+import mcjty.lib.setup.DeferredRegister;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -18,19 +20,15 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
-
-import static mcjty.ariente.Ariente.MODID;
 
 public class BlueprintRecipeRegistry {
-    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MODID);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, MODID);
 
     public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(Registries.RECIPE_TYPE, MODID);
 
-    public static void register(IEventBus bus) {
-        RECIPE_TYPES.register(bus);
-        RECIPE_SERIALIZERS.register(bus);
+    public static void register() {
+        RECIPE_TYPES.register();
+        RECIPE_SERIALIZERS.register();
     }
 
     public static final Supplier<RecipeSerializer<ConstructorRecipe>> CONSTRUCTOR_RECIPES = RECIPE_SERIALIZERS.register("constructor",

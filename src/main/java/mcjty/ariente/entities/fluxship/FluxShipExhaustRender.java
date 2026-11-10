@@ -1,9 +1,11 @@
 package mcjty.ariente.entities.fluxship;
 
+import static mcjty.ariente.blocks.generators.NegariteTankRenderer.NEGARITE_BEAM;
+import static mcjty.ariente.blocks.generators.PosiriteTankRenderer.POSIRITE_BEAM;
+
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.display.client.LiveCameraRenderer;
 import net.minecraft.client.Minecraft;
@@ -15,18 +17,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import static mcjty.ariente.blocks.generators.NegariteTankRenderer.NEGARITE_BEAM;
-import static mcjty.ariente.blocks.generators.PosiriteTankRenderer.POSIRITE_BEAM;
-
 /** Camera-facing power ribbons in the same rotating cabin frame as the hull. */
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class FluxShipExhaustRender {
 
     private static final int STRANDS = 4;
@@ -72,11 +66,8 @@ public class FluxShipExhaustRender {
         }
     }
 
-    @SubscribeEvent
-    public static void renderStage(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            EXHAUST_BUFFERS.endBatch();
-        }
+    public static void renderStage() {
+        EXHAUST_BUFFERS.endBatch();
     }
 
     private static void renderStrand(PoseStack pose, VertexConsumer vertices, TextureAtlasSprite sprite, float v,

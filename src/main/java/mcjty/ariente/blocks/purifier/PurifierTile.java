@@ -1,5 +1,12 @@
 package mcjty.ariente.blocks.purifier;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.hologui.api.Icons.GRAY_ARROW_DOWN;
+import static mcjty.hologui.api.Icons.GRAY_ARROW_UP;
+import static mcjty.hologui.api.Icons.WHITE_ARROW_DOWN;
+import static mcjty.hologui.api.Icons.WHITE_ARROW_UP;
+import static mcjty.lib.container.SlotDefinition.generic;
+
 import java.util.List;
 import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
@@ -23,6 +30,7 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
+import mcjty.lib.container.IItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -35,14 +43,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.items.IItemHandler;
-
-import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
-import static mcjty.hologui.api.Icons.GRAY_ARROW_DOWN;
-import static mcjty.hologui.api.Icons.GRAY_ARROW_UP;
-import static mcjty.hologui.api.Icons.WHITE_ARROW_DOWN;
-import static mcjty.hologui.api.Icons.WHITE_ARROW_UP;
-import static mcjty.lib.container.SlotDefinition.generic;
 
 public class PurifierTile extends ExtremeMachineTile implements IGuiTile, IPowerReceiver, IPowerUser {
 

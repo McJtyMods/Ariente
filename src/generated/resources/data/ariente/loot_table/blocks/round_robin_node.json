@@ -24,7 +24,6 @@
           "name": "ariente:round_robin_node"
         }
       ],
-      "name": "round_robin_node",
       "rolls": 1.0
     }
   ],

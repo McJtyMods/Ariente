@@ -27,7 +27,6 @@ public class DoorMarkerRenderer implements BlockEntityRenderer<DoorMarkerTile> {
         context = pContext;
     }
 
-    @Override
     public AABB getRenderBoundingBox(DoorMarkerTile tile) {
         return tile.getRenderBoundingBox();
     }

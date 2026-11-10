@@ -2,22 +2,20 @@ package mcjty.ariente.display.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import mcjty.ariente.client.InputGesture;
 import mcjty.ariente.client.WorldHolograms;
 import mcjty.ariente.display.DisplayBaseTile;
 import mcjty.ariente.display.DisplayGeometry;
 import mcjty.ariente.display.DisplayModuleItem;
 import mcjty.ariente.display.PacketDisplayAction;
+import mcjty.lib.network.ClientNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Matrix4fStack;
 
 public class DisplayClientEvents {
@@ -44,8 +42,7 @@ public class DisplayClientEvents {
         return nearest;
     }
 
-    @SubscribeEvent
-    public void input(InputEvent.InteractionKeyMappingTriggered event) {
+    public void input(InputGesture event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.screen != null || !(event.isUseItem() || event.isAttack())) {
             return;
@@ -70,13 +67,12 @@ public class DisplayClientEvents {
             if (event.isUseItem() && !mc.player.isShiftKeyDown() && module != null) {
                 DisplayModuleDrag.begin(module);
             } else {
-                PacketDistributor.sendToServer(new PacketDisplayAction(hit.tile().getBlockPos(), selected, event.isAttack()));
+                ClientNetworking.sendToServer(new PacketDisplayAction(hit.tile().getBlockPos(), selected, event.isAttack()));
             }
         }
     }
 
-    @SubscribeEvent
-    public void tick(ClientTickEvent.Post event) {
+    public void tick() {
         if (true) {
             DisplayModuleDrag.tick();
             DisplayDataReceiver.tick();
@@ -85,15 +81,14 @@ public class DisplayClientEvents {
         }
     }
 
-    @SubscribeEvent
-    public void render(RenderLevelStageEvent event) {
-        if (LiveCameraRenderer.isRendering() || event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
+    public void render(WorldRenderContext event) {
+        if (LiveCameraRenderer.isRendering()) {
             return;
         }
         // 1.21 removes the camera matrix before AFTER_LEVEL; queued poses only contain block offsets.
         Matrix4fStack modelView = RenderSystem.getModelViewStack();
         modelView.pushMatrix();
-        modelView.mul(event.getModelViewMatrix());
+        modelView.mul(event.positionMatrix());
         RenderSystem.applyModelViewMatrix();
         try {
             renderWorld(event);
@@ -103,7 +98,7 @@ public class DisplayClientEvents {
         }
     }
 
-    private static void renderWorld(RenderLevelStageEvent event) {
+    private static void renderWorld(WorldRenderContext event) {
         LiveCameraRenderer.beginFrame();
         WorldHolograms.renderWorld();
         Minecraft mc = Minecraft.getInstance();
@@ -111,14 +106,14 @@ public class DisplayClientEvents {
             return;
         }
         if (DisplayModuleDrag.active()) {
-            DisplayModuleDrag.render(event.getPoseStack(), mc.renderBuffers().bufferSource(), event.getCamera().getPosition());
+            DisplayModuleDrag.render(event.matrixStack(), mc.renderBuffers().bufferSource(), event.camera().getPosition());
             return;
         }
         DisplayGeometry.Hit hit = pick(mc.player);
         if (hit == null) {
             return;
         }
-        drawPreview(mc, hit, event.getPoseStack(), event.getCamera().getPosition());
+        drawPreview(mc, hit, event.matrixStack(), event.camera().getPosition());
     }
 
     private static void drawPreview(Minecraft mc, DisplayGeometry.Hit hit, PoseStack poses, Vec3 camera) {

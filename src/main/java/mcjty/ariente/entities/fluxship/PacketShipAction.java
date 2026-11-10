@@ -1,11 +1,11 @@
 package mcjty.ariente.entities.fluxship;
 
+import mcjty.lib.network.PayloadContext;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class PacketShipAction implements CustomPacketPayload {
 
@@ -62,7 +62,7 @@ public class PacketShipAction implements CustomPacketPayload {
         buf.writeFloat(pitch);
     }
 
-    public void handle(IPayloadContext context) {
+    public void handle(PayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
             if (player != null && player.getVehicle() instanceof FluxShipEntity ship) {

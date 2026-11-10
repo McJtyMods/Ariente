@@ -1,17 +1,17 @@
 package mcjty.ariente.gui.client;
 
+import static mcjty.ariente.gui.InventoryLayout.*;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.hologui.gui.HoloGuiRenderTools;
+import mcjty.lib.client.VertexConsumerWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
-
-import static mcjty.ariente.gui.InventoryLayout.*;
 
 public class InventoryRenderer {
 

@@ -4,17 +4,15 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import org.joml.Vector3f;
 
 public class ArienteRenderType extends RenderType {
@@ -26,17 +24,12 @@ public class ArienteRenderType extends RenderType {
     private static Vector3f previousShipLight0;
     private static Vector3f previousShipLight1;
 
-    public static void registerShaders(RegisterShadersEvent event) {
-        try {
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), ResourceLocation.fromNamespaceAndPath("ariente", "beam"),
-                    DefaultVertexFormat.NEW_ENTITY), shader -> beamShader = shader);
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), ResourceLocation.fromNamespaceAndPath("ariente", "display_item"),
-                    DefaultVertexFormat.NEW_ENTITY), shader -> displayItemShader = shader);
-            event.registerShader(new ShaderInstance(event.getResourceProvider(), ResourceLocation.fromNamespaceAndPath("ariente", "field_marker"),
-                    DefaultVertexFormat.NEW_ENTITY), shader -> fieldMarkerShader = shader);
-        } catch (IOException exception) {
-            throw new UncheckedIOException("Could not load the Ariente shaders", exception);
-        }
+    public static void registerShaders() {
+        CoreShaderRegistrationCallback.EVENT.register(context -> {
+            context.register(ResourceLocation.fromNamespaceAndPath("ariente", "beam"), DefaultVertexFormat.NEW_ENTITY, shader -> beamShader = shader);
+            context.register(ResourceLocation.fromNamespaceAndPath("ariente", "display_item"), DefaultVertexFormat.NEW_ENTITY, shader -> displayItemShader = shader);
+            context.register(ResourceLocation.fromNamespaceAndPath("ariente", "field_marker"), DefaultVertexFormat.NEW_ENTITY, shader -> fieldMarkerShader = shader);
+        });
     }
 
     public static RenderType displayItem(RenderType type) {

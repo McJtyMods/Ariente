@@ -32,11 +32,11 @@
     },
     "facing=up,locked=false": {
       "model": "ariente:block/machines/lock_unlocked",
-      "x": -90
+      "x": 270
     },
     "facing=up,locked=true": {
       "model": "ariente:block/machines/lock_locked",
-      "x": -90
+      "x": 270
     },
     "facing=west,locked=false": {
       "model": "ariente:block/machines/lock_unlocked",

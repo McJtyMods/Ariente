@@ -1,5 +1,7 @@
 package mcjty.ariente.items;
 
+import static mcjty.lib.builder.TooltipBuilder.header;
+
 import java.util.List;
 import java.util.Random;
 import mcjty.ariente.blocks.utility.WarperTile;
@@ -32,9 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
-import static mcjty.lib.builder.TooltipBuilder.header;
-
-public class ArientePearlItem extends Item implements ITooltipSettings {
+public class ArientePearlItem extends Item implements ITooltipSettings , EarlyUseItem {
     private static Random random = new Random();
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
             .info(header());
@@ -60,7 +60,7 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
         ItemStack itemstack = player.getItemInHand(hand);
 
         if (player.mayUseItemAt(pos.relative(facing), facing, itemstack) && state.getBlock() == Registration.WARPER.get()) {
-            if (world.isClientSide) {
+            if (world.isClientSide()) {
                 return InteractionResult.SUCCESS;
             } else {
                 BlockEntity te = world.getBlockEntity(pos);
@@ -111,7 +111,7 @@ public class ArientePearlItem extends Item implements ITooltipSettings {
         HitResult raytraceresult = Item.getPlayerPOVHitResult(world, player, ClipContext.Fluid.NONE);
 
         if (raytraceresult instanceof BlockHitResult && raytraceresult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult) raytraceresult).getBlockPos()).getBlock() == Registration.WARPER.get()) {
-            return new InteractionResultHolder<>(InteractionResult.PASS, itemstack);
+            return InteractionResultHolder.pass(itemstack);
         } else {
             player.startUsingItem(hand);
 

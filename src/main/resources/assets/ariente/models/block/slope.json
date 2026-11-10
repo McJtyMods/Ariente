@@ -3,7 +3,7 @@
   "textures": {
     "particle": "ariente:block/marble/blackmarble"
   },
-  "loader": "neoforge:obj",
   "model": "ariente:models/block/slope.obj",
-  "flip_v": true
+  "flip_v": true,
+  "fabric:type": "ariente:obj"
 }

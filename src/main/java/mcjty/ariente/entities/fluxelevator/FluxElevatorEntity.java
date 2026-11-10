@@ -1,6 +1,5 @@
 package mcjty.ariente.entities.fluxelevator;
 
-import net.minecraft.world.entity.EntityDimensions;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,6 +21,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
@@ -867,4 +867,5 @@ public class FluxElevatorEntity extends Entity {
         mZ = Mth.clamp(mZ, -max, max);
         this.move(MoverType.SELF, new Vec3(mX, 0.0D, mZ));
     }
+
 }

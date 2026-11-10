@@ -2,16 +2,15 @@ package mcjty.ariente.cables;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import mcjty.ariente.facade.FacadeItemBlock;
 import mcjty.ariente.facade.IFacadeSupport;
 import mcjty.ariente.power.PowerSenderSupport;
 import mcjty.ariente.setup.Registration;
+import mcjty.lib.client.ModelProperty;
 import mcjty.lib.compat.theoneprobe.TOPInfoProvider;
 import mcjty.lib.compat.waila.WailaInfoProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -27,15 +26,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
 
 public abstract class GenericCableBlock extends Block implements WailaInfoProvider, TOPInfoProvider, EntityBlock {
+    public static final ModelProperty<BlockState> FACADEID = new ModelProperty<>();
 
     // Properties that indicate if there is the same block in a certain direction.
     public static final EnumProperty<ConnectorType> NORTH = EnumProperty.<ConnectorType>create("north", ConnectorType.class);
@@ -45,7 +43,6 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
     public static final EnumProperty<ConnectorType> UP = EnumProperty.<ConnectorType>create("up", ConnectorType.class);
     public static final EnumProperty<ConnectorType> DOWN = EnumProperty.<ConnectorType>create("down", ConnectorType.class);
 
-    public static final ModelProperty<BlockState> FACADEID = new ModelProperty<>();
     public static final EnumProperty<CableColor> COLOR = EnumProperty.<CableColor>create("color", CableColor.class);
 
     private static VoxelShape[] shapeCache = null;
@@ -171,22 +168,6 @@ public abstract class GenericCableBlock extends Block implements WailaInfoProvid
         } else {
             return null;
         }
-    }
-
-    @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        if (world.getBlockEntity(pos) instanceof IFacadeSupport facade && facade.getMimicBlock() != null) {
-            if (!world.isClientSide) {
-                ItemStack drop = new ItemStack(Registration.FACADE_ITEM.get());
-                FacadeItemBlock.setMimicBlock(drop, facade.getMimicBlock());
-                facade.setMimicBlock(null);
-                if (!player.getAbilities().instabuild) {
-                    popResource(world, pos, drop);
-                }
-            }
-            return false;
-        }
-        return super.onDestroyedByPlayer(state, world, pos, player, willHarvest, fluid);
     }
 
     @Override

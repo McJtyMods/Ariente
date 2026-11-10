@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 
@@ -33,7 +32,7 @@ public class FluxShipRender extends EntityRenderer<FluxShipEntity> {
         Minecraft mc = Minecraft.getInstance();
         int overlay = OverlayTexture.pack(OverlayTexture.u(0), OverlayTexture.v(ship.getHurtTime() > 0));
         mc.getBlockRenderer().getModelRenderer().renderModel(pose.last(), buffers.getBuffer(ArienteRenderType.SHIP_HULL),
-                null, mc.getModelManager().getModel(ModelResourceLocation.standalone(MODEL)), 1, 1, 1, light, overlay);
+                null, mc.getModelManager().getModel(MODEL), 1, 1, 1, light, overlay);
         pose.popPose();
         FluxShipWeaponRender.render(pose, buffers, light, overlay);
         FluxShipExhaustRender.render(ship, partialTick, pose);

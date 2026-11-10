@@ -2,19 +2,19 @@
   "variants": {
     "orientation=down_ne": {
       "model": "ariente:block/utility/sensor_item_node_br",
-      "x": -90
+      "x": 270
     },
     "orientation=down_nw": {
       "model": "ariente:block/utility/sensor_item_node_bl",
-      "x": -90
+      "x": 270
     },
     "orientation=down_se": {
       "model": "ariente:block/utility/sensor_item_node_tr",
-      "x": -90
+      "x": 270
     },
     "orientation=down_sw": {
       "model": "ariente:block/utility/sensor_item_node_tl",
-      "x": -90
+      "x": 270
     },
     "orientation=east_dn": {
       "model": "ariente:block/utility/sensor_item_node_br",

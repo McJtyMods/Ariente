@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import mcjty.lib.network.PayloadContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -7,7 +8,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class PacketAutoFieldReturnRenderInfo implements CustomPacketPayload {
 
@@ -41,7 +41,7 @@ public class PacketAutoFieldReturnRenderInfo implements CustomPacketPayload {
         this.renderInfo = renderInfo;
     }
 
-    public void handle(IPayloadContext ctx) {
+    public void handle(PayloadContext ctx) {
         ctx.enqueueWork(() -> {
             BlockEntity te = Minecraft.getInstance().level.getBlockEntity(pos);
             if (te instanceof AutoFieldTile) {

@@ -1,5 +1,9 @@
 package mcjty.ariente.blocks.utility;
 
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
+
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.IWarper;
 import mcjty.ariente.blocks.ArienteBlockEntity;
@@ -13,11 +17,12 @@ import mcjty.hologui.api.StyledColor;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
+import mcjty.lib.varia.PersistentData;
 import mcjty.lib.varia.TeleportationTools;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,10 +36,6 @@ import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 
-import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
-import static mcjty.lib.builder.TooltipBuilder.header;
-import static mcjty.lib.builder.TooltipBuilder.key;
-
 public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper {
 
     private AABB renderBox = null;
@@ -46,13 +47,17 @@ public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper 
     }
 
     public static BaseBlock createBlock() {
-        return new BaseBlock(new BlockBuilder()
-                .properties(BlockBuilder.STANDARD_IRON.lightLevel((light) -> { return 8; }))
-                .info(key("message.ariente.shiftmessage"))
-                .infoShift(header())
-                .topDriver(DRIVER)
-                .tileEntitySupplier(WarperTile::new)
-        ) {
+        return new BaseBlock(
+                new BlockBuilder()
+                        .properties(
+                                BlockBuilder.STANDARD_IRON.lightLevel(
+                                        (light) -> {
+                                            return 8;
+                                        }))
+                        .info(key("message.ariente.shiftmessage"))
+                        .infoShift(header())
+                        .topDriver(DRIVER)
+                        .tileEntitySupplier(WarperTile::new)) {
             @Override
             public RotationType getRotationType() {
                 return RotationType.NONE;
@@ -61,7 +66,8 @@ public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper 
     }
 
     @Override
-    public InteractionResult onBlockActivated(BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
+    public InteractionResult onBlockActivated(
+            BlockState state, Player player, InteractionHand hand, BlockHitResult result) {
         Ariente.guiHandler.openHoloGui(level, worldPosition, player);
         return InteractionResult.SUCCESS;
     }
@@ -79,7 +85,14 @@ public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper 
 
     private AABB getBeamBox() {
         if (renderBox == null) {
-            renderBox = new AABB(getBlockPos()).minmax(new AABB(new BlockPos(worldPosition.getX(), worldPosition.getY() + 10, worldPosition.getZ())));
+            renderBox =
+                    new AABB(getBlockPos())
+                            .minmax(
+                                    new AABB(
+                                            new BlockPos(
+                                                    worldPosition.getX(),
+                                                    worldPosition.getY() + 10,
+                                                    worldPosition.getZ())));
         }
         return renderBox;
     }
@@ -134,7 +147,9 @@ public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper 
     }
 
     public void warp(Player player) {
-        if (!(player instanceof ServerPlayer serverPlayer) || player.level() != level || !Ariente.setup.arienteWorld) {
+        if (!(player instanceof ServerPlayer serverPlayer)
+                || player.level() != level
+                || !Ariente.setup.arienteWorld) {
             return;
         }
         // A previously opened hologram must not bypass the server's current charge state.
@@ -142,34 +157,50 @@ public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper 
             return;
         }
         if (level.dimension().equals(Level.OVERWORLD)) {
-            BlockPos destination = ArienteWorldCompat.getArienteWorld().getNearestTeleportationSpot(player.blockPosition());
+            BlockPos destination =
+                    ArienteWorldCompat.getArienteWorld()
+                            .getNearestTeleportationSpot(player.blockPosition());
             // Remember the source entrance so the return trip works without a bed.
-            player.getPersistentData().put("arienteReturn", NbtUtils.writeBlockPos(worldPosition.above()));
-            TeleportationTools.teleportToDimension(player, ArienteWorldCompat.getArienteWorld().getDimension(),
-                    destination.getX() + .5, destination.getY(), destination.getZ() + .5);
+            PersistentData.get(player).putLong("arienteReturn", worldPosition.above().asLong());
+            TeleportationTools.teleportToDimension(
+                    player,
+                    ArienteWorldCompat.getArienteWorld().getDimension(),
+                    destination.getX() + .5,
+                    destination.getY(),
+                    destination.getZ() + .5);
         } else if (level.dimension().equals(ArienteWorldCompat.getArienteWorld().getDimension())) {
             ServerLevel overworld = serverPlayer.server.getLevel(Level.OVERWORLD);
             BlockPos destination = null;
-            if (player.getPersistentData().contains("arienteReturn")) {
-                BlockPos source = NbtUtils.readBlockPos(player.getPersistentData(), "arienteReturn").orElseThrow();
+            if (PersistentData.get(player).contains("arienteReturn")) {
+                BlockPos source = BlockPos.of(PersistentData.get(player).getLong("arienteReturn"));
                 overworld.getChunkAt(source);
                 if (overworld.getBlockState(source.below()).is(Registration.WARPER.get())
-                        && overworld.isEmptyBlock(source) && overworld.isEmptyBlock(source.above())) {
+                        && overworld.isEmptyBlock(source)
+                        && overworld.isEmptyBlock(source.above())) {
                     destination = source;
                 }
             }
-            if (destination == null && serverPlayer.getRespawnDimension().equals(Level.OVERWORLD)
+            if (destination == null
+                    && serverPlayer.getRespawnDimension().equals(Level.OVERWORLD)
                     && serverPlayer.getRespawnPosition() != null) {
                 overworld.getChunkAt(serverPlayer.getRespawnPosition());
-                var respawn = serverPlayer.findRespawnPositionAndUseSpawnBlock(true, DimensionTransition.DO_NOTHING);
+                var respawn =
+                        serverPlayer.findRespawnPositionAndUseSpawnBlock(
+                                true, DimensionTransition.DO_NOTHING);
                 destination = BlockPos.containing(respawn.pos());
             }
             if (destination == null) {
                 BlockPos spawn = overworld.getSharedSpawnPos();
                 overworld.getChunkAt(spawn);
-                destination = overworld.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawn);
+                destination =
+                        overworld.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawn);
             }
-            TeleportationTools.teleportToDimension(player, Level.OVERWORLD, destination.getX() + .5, destination.getY(), destination.getZ() + .5);
+            TeleportationTools.teleportToDimension(
+                    player,
+                    Level.OVERWORLD,
+                    destination.getX() + .5,
+                    destination.getY(),
+                    destination.getZ() + .5);
         }
     }
 
@@ -177,19 +208,33 @@ public class WarperTile extends ArienteBlockEntity implements IGuiTile, IWarper 
     public IGuiComponent<?> createGui(String tag, IGuiComponentRegistry registry) {
         if (getChargePercentage() < 100) {
             return registry.panel(0, 0, 8, 8)
-                    .add(registry.text(0, 2, 1, 1).text("Teleportation").color(registry.color(StyledColor.LABEL)))
-                    .add(registry.text(0, 4, 1, 1).text("Charged to " + getChargePercentage() + "%"))
-                    .add(registry.text(0, 5, 1, 1).text("Insufficient!").color(registry.color(StyledColor.ERROR)));
+                    .add(
+                            registry.text(0, 2, 1, 1)
+                                    .text("Teleportation")
+                                    .color(registry.color(StyledColor.LABEL)))
+                    .add(
+                            registry.text(0, 4, 1, 1)
+                                    .text("Charged to " + getChargePercentage() + "%"))
+                    .add(
+                            registry.text(0, 5, 1, 1)
+                                    .text("Insufficient!")
+                                    .color(registry.color(StyledColor.ERROR)));
         } else {
             return registry.panel(0, 0, 8, 8)
-                    .add(registry.text(0, 2, 1, 1).text("Teleportation").color(registry.color(StyledColor.LABEL)))
-                    .add(registry.button(0, 4, 3, 1).text("Warp").hitEvent((component, player, entity, x, y) -> {
-                        warp(player);
-                    }));
+                    .add(
+                            registry.text(0, 2, 1, 1)
+                                    .text("Teleportation")
+                                    .color(registry.color(StyledColor.LABEL)))
+                    .add(
+                            registry.button(0, 4, 3, 1)
+                                    .text("Warp")
+                                    .hitEvent(
+                                            (component, player, entity, x, y) -> {
+                                                warp(player);
+                                            }));
         }
     }
 
     @Override
-    public void syncToClient() {
-    }
+    public void syncToClient() {}
 }

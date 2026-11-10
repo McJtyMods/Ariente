@@ -1,36 +1,25 @@
+## Fabric 1.21.1 development
+
+This branch is `1.21_fabric` and requires Java 21. In MultiWorkspace, build this mod with `./gradlew :Ariente:build` from the workspace root. Individual checkouts use the same `gradletools.gradle` driver, preferring local peer sources before the Jenkins/Maven fallback. Before the remote branch is available, select the workspace script with `-Pgradletools_path=../gradletools.gradle` and use `--gradle-user-home ../.gradle-user-home`.
+
 # Ariente
 
 Ariente is a mod about technology and exploration
 
 ## Building and Jenkins
 
-For Minecraft 1.21.1 / NeoForge, select Java 21 and **Use Gradle Wrapper** in
-Jenkins (Gradle 8.14.2). Use tasks `clean build publish`, equivalent to:
+Use Java 21 and the Gradle 8.14.2 wrapper for Fabric 1.21.1. Jenkins can run
+`clean build publish`. Set `local_maven` to the Maven repository directory, or
+use `-Pmavendir=...`; otherwise publishing uses the local Maven cache. The
+publication includes the remapped mod jar, API jar and POM.
 
-```sh
-./gradlew clean build publish
-```
+The shared `1.21_fabric/gradletools.gradle` controls Fabric dependencies and
+prefers included local peers. Isolated builds use Fabric Maven coordinates.
+Jenkins appends `-BUILD_NUMBER` to this mod's version; runtime minimums are
+in `fabric.mod.json`. Dependency revision defaults and command-line overrides
+are documented in the MultiWorkspace README.
 
-NeoGradle manages mapped dependencies through build tasks, so no ForgeGradle 5
-cache workaround is needed. Set `local_maven` to the Jenkins Maven repository
-directory, or override it with `-Pmavendir=...`. Without either setting, `publish`
-writes to the local Maven cache. The publication includes the mod jar, API jar
-and POM.
-
-Standalone compilation uses the published Jenkins HoloGui artifact
-`1.21-0.0.10-beta-6`. This compilation version is independent of the runtime
-minimum `1.21-2.0.0` declared in `neoforge.mods.toml`. Jenkins's `BUILD_NUMBER`
-is part of the Maven artifact version; it does not need to match the release
-uploaded by ReleaseMe. All dependency artifact versions are centralized in the
-matching MultiWorkspace `gradletools.gradle`; do not override them in the mod's
-`gradle.properties`.
-
-ArienteWorld similarly compiles against the published Ariente artifact
-`1.21-0.0.31-alpha-2`, while requiring Ariente `1.21-2.0.0` at runtime. Release
-HoloGui first, then Ariente, then ArienteWorld. A new Jenkins publication is not
-required when those existing compilation artifacts provide the needed API.
-An additional compilation repository can be supplied with
-`-Pariente_dependency_repository=<repository URL>`.
+Publish HoloGui before Ariente, then ArienteWorld, so standalone jobs can resolve their Fabric dependencies.
 
 ## Gameplay and development
 
@@ -38,7 +27,7 @@ See [the gameplay and systems guide](ARIENTE_GUIDE.md) for the Forge 1.20.1
 development port, including machines, power, progression, recipes, and current
 limitations.
 
-Rendering uses Minecraft and Forge APIs. Holograms, lasers, connected textures,
+Rendering uses Minecraft and Fabric APIs. Holograms, lasers, connected textures,
 and emissive surfaces do not require Embeddium or Oculus. Shader packs can add
 effects such as bloom; those extra effects are not part of the vanilla renderer.
 
@@ -49,7 +38,9 @@ multipart blocks also support normal pickaxe speed and harvest checks. The AI
 Core takes about **10 seconds with an unenchanted netherite pickaxe** while
 retaining blast resistance 800. Vanilla mining modifiers still apply.
 
-The focused mining regression uses actual loaded tags and player mining progress.
+## Historical NeoForge checks
+
+These scripts retain their original NeoGradle configuration and are not enabled by the Fabric build. The focused mining regression uses actual loaded tags and player mining progress.
 Run from the matching multiworkspace with its Java version selected:
 
 ```sh
@@ -74,9 +65,9 @@ Outputs use `Ariente/build/verification/equipment-tests/`. The 1.21.1 equip
 command and armor panels pass this check without gameplay code changes.
 
 
-Development target: Minecraft 1.21.1, NeoForge 21.1.215, Java 21, branch `1.21_neo`.
+Development target: Minecraft 1.21.1, Fabric, Java 21, branch `1.21_fabric`.
 Build with `./gradlew build` standalone, or `./gradlew :Ariente:build` from MultiWorkspace.
 The workspace uses the included McJtyLib and The One Probe sources. Ariente and ArienteWorld also use included HoloGui/Ariente sources. Published Maven artifacts are standalone fallbacks.
-Unpublished port dependencies can be provided with `-Pariente_dependency_repository=<repository URL>`; `-Pgradletools_path=<file>` selects an explicit shared Gradle script.
+`-Pgradletools_path=<file>` selects an explicit shared Gradle script; dependency artifact versions can be overridden as described in the MultiWorkspace README.
 
-The [NeoForge port checkpoint](../ArienteWorld/PORT_1_21.md) documents current commands and validation. Earlier Forge fixture commands in this file are historical.
+The [NeoForge port checkpoint](../ArienteWorld/PORT_1_21.md) and the Forge fixture commands above are historical references. Fabric visual validation uses ArienteWorld's tutorial generator and preview.

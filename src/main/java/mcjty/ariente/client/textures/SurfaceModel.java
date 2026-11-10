@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
+import mcjty.lib.client.BakedModelWrapper;
+import mcjty.lib.client.ChunkRenderTypeSet;
+import mcjty.lib.client.ModelData;
+import mcjty.lib.client.ModelProperty;
+import mcjty.lib.client.ModelTools;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
@@ -16,10 +21,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
 
 public class SurfaceModel extends BakedModelWrapper<BakedModel> {
 
@@ -41,7 +42,7 @@ public class SurfaceModel extends BakedModelWrapper<BakedModel> {
             int flags = 0;
             RandomSource random = RandomSource.create(0);
             for (int side = 0; side < 7; side++) {
-                for (BakedQuad quad : originalModel.getQuads(state, side == 6 ? null : Direction.values()[side], random, data, null)) {
+                for (BakedQuad quad : ModelTools.quads(originalModel, state, side == 6 ? null : Direction.values()[side], random, data, null)) {
                     var rule = SurfaceTextures.get(quad.getSprite().contents().name());
                     if (rule != null) {
                         flags |= 1;
@@ -78,7 +79,7 @@ public class SurfaceModel extends BakedModelWrapper<BakedModel> {
 
     @Override
     public ModelData getModelData(BlockAndTintGetter level, BlockPos pos, BlockState state, ModelData data) {
-        ModelData base = originalModel.getModelData(level, pos, state, data);
+        ModelData base = ModelTools.data(originalModel, level, pos, state, data);
         if ((traits(state, base) & 2) == 0) {
             return base;
         }
@@ -104,19 +105,19 @@ public class SurfaceModel extends BakedModelWrapper<BakedModel> {
 
     @Override
     public ChunkRenderTypeSet getRenderTypes(BlockState state, RandomSource random, ModelData data) {
-        ChunkRenderTypeSet base = originalModel.getRenderTypes(state, random, data);
+        ChunkRenderTypeSet base = ModelTools.renderTypes(originalModel, state, random, data);
         return (traits(state, data) & 4) == 0 ? base : ChunkRenderTypeSet.union(base, ChunkRenderTypeSet.of(RenderType.cutout()));
     }
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource random, ModelData data, @Nullable RenderType layer) {
         if ((traits(state, data) & 1) == 0) {
-            return originalModel.getQuads(state, side, random, data, layer);
+            return ModelTools.quads(originalModel, state, side, random, data, layer);
         }
         List<BakedQuad> result = new ArrayList<>();
         Integer neighbors = data.get(NEIGHBORS);
-        var baseLayers = state == null ? null : originalModel.getRenderTypes(state, random, data);
-        for (BakedQuad quad : originalModel.getQuads(state, side, random, data, null)) {
+        var baseLayers = state == null ? null : ModelTools.renderTypes(originalModel, state, random, data);
+        for (BakedQuad quad : ModelTools.quads(originalModel, state, side, random, data, null)) {
             SurfaceTextures.Rule rule = SurfaceTextures.get(quad.getSprite().contents().name());
             boolean baseLayer = layer == null || (rule != null && rule.cutout() ? layer == RenderType.cutout() : baseLayers == null || baseLayers.contains(layer));
             if (baseLayer) {
@@ -141,13 +142,13 @@ public class SurfaceModel extends BakedModelWrapper<BakedModel> {
 
     @Override
     public BakedModel applyTransform(ItemDisplayContext displayContext, PoseStack poses, boolean leftHand) {
-        BakedModel transformed = originalModel.applyTransform(displayContext, poses, leftHand);
+        BakedModel transformed = super.applyTransform(displayContext, poses, leftHand);
         return transformed == originalModel ? this : new SurfaceModel(transformed);
     }
 
     @Override
     public List<BakedModel> getRenderPasses(ItemStack stack, boolean fabulous) {
-        List<BakedModel> passes = originalModel.getRenderPasses(stack, fabulous);
+        List<BakedModel> passes = super.getRenderPasses(stack, fabulous);
         if (passes.size() == 1 && passes.get(0) == originalModel) {
             return List.of(this);
         }

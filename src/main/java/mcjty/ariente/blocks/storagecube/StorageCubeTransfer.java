@@ -1,13 +1,13 @@
 package mcjty.ariente.blocks.storagecube;
 
+import mcjty.lib.container.CombinedInvWrapper;
+import mcjty.lib.container.IItemHandler;
+import mcjty.lib.container.IItemHandlerModifiable;
+import mcjty.lib.container.InvWrapper;
+import mcjty.lib.container.ItemHandlerHelper;
+import mcjty.lib.container.RangedWrapper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import net.neoforged.neoforge.items.wrapper.RangedWrapper;
 
 public class StorageCubeTransfer {
 

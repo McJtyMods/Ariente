@@ -1,6 +1,11 @@
 package mcjty.ariente.blocks.utility;
 
-import mcjty.hologui.api.*;
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.hologui.api.Icons.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
+import static mcjty.lib.container.SlotDefinition.generic;
+
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,6 +17,7 @@ import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.gui.PlayerInventoryPanel;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.setup.Registration;
+import mcjty.hologui.api.*;
 import mcjty.hologui.api.components.IPlayerSlots;
 import mcjty.hologui.api.components.ISlots;
 import mcjty.lib.blocks.BaseBlock;
@@ -19,6 +25,9 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
+import mcjty.lib.container.IItemHandler;
+import mcjty.lib.container.ItemHandlerHelper;
+import mcjty.lib.varia.Lazy;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -30,15 +39,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-
-import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
-import static mcjty.hologui.api.Icons.*;
-import static mcjty.lib.builder.TooltipBuilder.header;
-import static mcjty.lib.builder.TooltipBuilder.key;
-import static mcjty.lib.container.SlotDefinition.generic;
 
 public class BlueprintStorageTile extends ArienteBlockEntity implements IGuiTile, ICityEquipment {
 

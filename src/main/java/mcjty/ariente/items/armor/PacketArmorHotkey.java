@@ -1,13 +1,13 @@
 package mcjty.ariente.items.armor;
 
 import mcjty.ariente.items.modules.ModuleSupport;
+import mcjty.lib.network.PayloadContext;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class PacketArmorHotkey implements CustomPacketPayload {
 
@@ -36,7 +36,7 @@ public class PacketArmorHotkey implements CustomPacketPayload {
         this.index = index;
     }
 
-    public void handle(IPayloadContext ctx) {
+    public void handle(PayloadContext ctx) {
         ctx.enqueueWork(() -> {
             Player playerEntity = (ServerPlayer) ctx.player();
             ModuleSupport.receivedHotkey(playerEntity, index);

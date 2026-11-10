@@ -3,13 +3,13 @@ package mcjty.ariente.blocks.utility;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
+import mcjty.lib.container.IItemHandler;
 import mcjty.lib.varia.OrientationTools;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.IItemHandler;
 
 public class BlueprintItemHandler implements IItemHandler {
 

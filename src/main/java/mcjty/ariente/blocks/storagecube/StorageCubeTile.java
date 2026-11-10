@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.storagecube;
 
+import static mcjty.lib.container.SlotDefinition.generic;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -17,6 +19,7 @@ import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.items.ItemData;
 import mcjty.ariente.items.KeyCardItem;
+import mcjty.ariente.network.Packets;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.security.AreaLocks;
 import mcjty.ariente.security.IKeyCardSlot;
@@ -31,6 +34,7 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
+import mcjty.lib.container.IItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -51,10 +55,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.network.PacketDistributor;
-
-import static mcjty.lib.container.SlotDefinition.generic;
 
 public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICityEquipment, IStorageTile, IKeyCardSlot, ILockTarget {
 
@@ -257,14 +257,7 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        saveClientDataToNBT(tag, provider);
-        return tag;
-    }
-
-    @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
-        loadClientDataFromNBT(tag, provider);
+        return super.getUpdateTag(provider);
     }
 
     public List<Preview> getPreview() {
@@ -371,7 +364,7 @@ public class StorageCubeTile extends ArienteBlockEntity implements IGuiTile, ICi
             if (!changes.isEmpty()) {
                 viewer.revision++;
             }
-            PacketDistributor.sendToPlayer(player,
+            Packets.sendToPlayer(player,
                     new PacketStorageCubeData(worldPosition, viewer.entityId, items.getSlots(), viewer.revision, force, changes));
         }
     }

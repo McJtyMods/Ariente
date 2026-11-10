@@ -1,2 +1,5 @@
+1.21.1-2.0.0-fabric
+- Ported to Minecraft 1.21.1 on Fabric.
+
 1.21-2.0.0:
 - Ported to Minecraft 1.21.1 on NeoForge.

@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
-import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.utility.ILockTarget;
 import mcjty.ariente.blocks.utility.LockTile;
 import mcjty.ariente.blocks.utility.wireless.WirelessLockTile;
 import mcjty.ariente.varia.LoadedChunks;
+import mcjty.lib.varia.PersistentData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -19,16 +19,12 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.level.ChunkEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 /** Keeps controller authority available without loading the controller's chunk. */
-@EventBusSubscriber(modid = Ariente.MODID)
 public class AreaLocks extends SavedData {
 
     private static final String TARGET_STATE = "ArienteAreaLock";
@@ -37,7 +33,7 @@ public class AreaLocks extends SavedData {
     private final Set<ChunkPos> pendingChunks = new HashSet<>();
 
     public static AreaLocks get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(AreaLocks::new, (tag, provider) -> load(tag)), "ariente_area_locks");
+        return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(AreaLocks::new, (tag, provider) -> load(tag), null), "ariente_area_locks");
     }
 
     public static void loaded(BlockEntity tile) {
@@ -48,9 +44,8 @@ public class AreaLocks extends SavedData {
         }
     }
 
-    @SubscribeEvent
-    public static void tick(LevelTickEvent.Pre event) {
-        if (event.getLevel() instanceof ServerLevel level) {
+    public static void tick(Level world) {
+        if (world instanceof ServerLevel level) {
             AreaLocks locks = get(level);
             for (ChunkPos pos : List.copyOf(locks.pendingChunks)) {
                 LevelChunk chunk = level.getChunkSource().getChunkNow(pos.x, pos.z);
@@ -76,26 +71,25 @@ public class AreaLocks extends SavedData {
         }
     }
 
-    @SubscribeEvent
-    public static void chunkLoaded(ChunkEvent.Load event) {
-        if (event.getLevel() instanceof ServerLevel level) {
-            ChunkPos pos = event.getChunk().getPos();
+    public static void chunkLoaded(Level world, LevelChunk chunk) {
+        if (world instanceof ServerLevel level) {
+            ChunkPos pos = chunk.getPos();
             level.getServer().tell(new TickTask(level.getServer().getTickCount(),
                     () -> get(level).pendingChunks.add(pos)));
         }
     }
 
     public static void saveTarget(BlockEntity tile, CompoundTag tag) {
-        if (tile.getPersistentData().contains(TARGET_STATE, Tag.TAG_COMPOUND)) {
-            tag.put(TARGET_STATE, tile.getPersistentData().getCompound(TARGET_STATE).copy());
+        if (PersistentData.get(tile).contains(TARGET_STATE, Tag.TAG_COMPOUND)) {
+            tag.put(TARGET_STATE, PersistentData.get(tile).getCompound(TARGET_STATE).copy());
         }
     }
 
     public static void loadTarget(BlockEntity tile, CompoundTag tag) {
         if (tag.contains(TARGET_STATE, Tag.TAG_COMPOUND)) {
-            tile.getPersistentData().put(TARGET_STATE, tag.getCompound(TARGET_STATE).copy());
+            PersistentData.get(tile).put(TARGET_STATE, tag.getCompound(TARGET_STATE).copy());
         } else {
-            tile.getPersistentData().remove(TARGET_STATE);
+            PersistentData.get(tile).remove(TARGET_STATE);
         }
     }
 
@@ -160,7 +154,7 @@ public class AreaLocks extends SavedData {
                 locked |= controller.locked();
             }
         }
-        CompoundTag data = tile.getPersistentData();
+        CompoundTag data = PersistentData.get(tile);
         if (authority != null) {
             CompoundTag state = new CompoundTag();
             if (authority.key() != null) {

@@ -1,12 +1,12 @@
 package mcjty.ariente.display;
 
 import mcjty.ariente.display.client.DisplayDataReceiver;
+import mcjty.lib.network.PayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /** One bounded fragment of one module snapshot. Layouts travel separately in block entity updates. */
 public record PacketDisplayData(BlockPos pos, long layoutVersion, int index, int snapshotVersion,
@@ -44,7 +44,7 @@ public record PacketDisplayData(BlockPos pos, long layoutVersion, int index, int
         buffer.writeByteArray(data);
     }
 
-    public void handle(IPayloadContext context) {
+    public void handle(PayloadContext context) {
         context.enqueueWork(() -> DisplayDataReceiver.receive(this));
     }
 }

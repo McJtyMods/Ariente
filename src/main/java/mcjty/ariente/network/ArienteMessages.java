@@ -18,51 +18,62 @@ import mcjty.ariente.entities.levitator.PacketLevitatorInput;
 import mcjty.ariente.items.armor.PacketArmorHotkey;
 import mcjty.ariente.items.armor.PacketConfigureArmor;
 import mcjty.ariente.items.armor.PacketPersonalForcefield;
+import mcjty.lib.network.ClientNetworking;
 import mcjty.lib.network.PacketSendClientCommand;
 import mcjty.lib.network.PacketSendServerCommand;
+import mcjty.lib.network.PayloadContext;
 import mcjty.lib.typed.TypedMap;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class ArienteMessages {
 
-    public static void registerMessages(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("ariente").versioned("1");
-        registrar.playToServer(PacketStorageCubeAction.TYPE, PacketStorageCubeAction.CODEC, PacketStorageCubeAction::handle);
-        registrar.playToClient(PacketStorageCubeData.TYPE, PacketStorageCubeData.CODEC, PacketStorageCubeData::handle);
-        registrar.playToServer(PacketDisplayAction.TYPE, PacketDisplayAction.CODEC, PacketDisplayAction::handle);
-        registrar.playToServer(PacketDisplayGesture.TYPE, PacketDisplayGesture.CODEC, PacketDisplayGesture::handle);
-        registrar.playToClient(PacketDisplayGestureResult.TYPE, PacketDisplayGestureResult.CODEC, PacketDisplayGestureResult::handle);
-        registrar.playToServer(PacketClickStorage.TYPE, PacketClickStorage.CODEC, PacketClickStorage::handle);
-        registrar.playToServer(PacketHitForcefield.TYPE, PacketHitForcefield.CODEC, PacketHitForcefield::handle);
-        registrar.playToServer(PacketConfigureArmor.TYPE, PacketConfigureArmor.CODEC, PacketConfigureArmor::handle);
-        registrar.playToServer(PacketArmorHotkey.TYPE, PacketArmorHotkey.CODEC, PacketArmorHotkey::handle);
-        registrar.playToServer(PacketShipAction.TYPE, PacketShipAction.CODEC, PacketShipAction::handle);
-        registrar.playToServer(PacketAutoFieldRequestRenderInfo.TYPE, PacketAutoFieldRequestRenderInfo.CODEC, PacketAutoFieldRequestRenderInfo::handle);
-        registrar.playToClient(PacketDisplayData.TYPE, PacketDisplayData.CODEC, PacketDisplayData::handle);
-        registrar.playToServer(PacketRequestDisplayData.TYPE, PacketRequestDisplayData.CODEC, PacketRequestDisplayData::handle);
-        registrar.playToClient(PacketDamageForcefield.TYPE, PacketDamageForcefield.CODEC, PacketDamageForcefield::handle);
-        registrar.playToClient(PacketAutoFieldReturnRenderInfo.TYPE, PacketAutoFieldReturnRenderInfo.CODEC, PacketAutoFieldReturnRenderInfo::handle);
-        registrar.playToClient(PacketPersonalForcefield.TYPE, PacketPersonalForcefield.CODEC, PacketPersonalForcefield::handle);
-        registrar.playToServer(PacketLevitatorInput.TYPE, PacketLevitatorInput.CODEC, PacketLevitatorInput::handle);
+    public static void registerMessages() {
+        PayloadTypeRegistry.playC2S().register(PacketStorageCubeAction.TYPE, PacketStorageCubeAction.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PacketStorageCubeAction.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
+        PayloadTypeRegistry.playS2C().register(PacketStorageCubeData.TYPE, PacketStorageCubeData.CODEC);
+        PayloadTypeRegistry.playC2S().register(PacketDisplayAction.TYPE, PacketDisplayAction.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PacketDisplayAction.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
+        PayloadTypeRegistry.playC2S().register(PacketDisplayGesture.TYPE, PacketDisplayGesture.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PacketDisplayGesture.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
+        PayloadTypeRegistry.playS2C().register(PacketDisplayGestureResult.TYPE, PacketDisplayGestureResult.CODEC);
+        PayloadTypeRegistry.playC2S().register(PacketClickStorage.TYPE, PacketClickStorage.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PacketClickStorage.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
+        PayloadTypeRegistry.playC2S().register(PacketHitForcefield.TYPE, PacketHitForcefield.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PacketHitForcefield.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
+        PayloadTypeRegistry.playC2S().register(PacketConfigureArmor.TYPE, PacketConfigureArmor.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PacketConfigureArmor.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
+        PayloadTypeRegistry.playC2S().register(PacketArmorHotkey.TYPE, PacketArmorHotkey.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PacketArmorHotkey.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
+        PayloadTypeRegistry.playC2S().register(PacketShipAction.TYPE, PacketShipAction.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PacketShipAction.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
+        PayloadTypeRegistry.playC2S().register(PacketAutoFieldRequestRenderInfo.TYPE, PacketAutoFieldRequestRenderInfo.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PacketAutoFieldRequestRenderInfo.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
+        PayloadTypeRegistry.playS2C().register(PacketDisplayData.TYPE, PacketDisplayData.CODEC);
+        PayloadTypeRegistry.playC2S().register(PacketRequestDisplayData.TYPE, PacketRequestDisplayData.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PacketRequestDisplayData.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
+        PayloadTypeRegistry.playS2C().register(PacketDamageForcefield.TYPE, PacketDamageForcefield.CODEC);
+        PayloadTypeRegistry.playS2C().register(PacketAutoFieldReturnRenderInfo.TYPE, PacketAutoFieldReturnRenderInfo.CODEC);
+        PayloadTypeRegistry.playS2C().register(PacketPersonalForcefield.TYPE, PacketPersonalForcefield.CODEC);
+        PayloadTypeRegistry.playC2S().register(PacketLevitatorInput.TYPE, PacketLevitatorInput.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(PacketLevitatorInput.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
     }
 
     public static void sendToServer(String command, @Nonnull TypedMap.Builder argumentBuilder) {
-        PacketDistributor.sendToServer(PacketSendServerCommand.create(Ariente.MODID, command, argumentBuilder.build()));
+        ClientNetworking.sendToServer(PacketSendServerCommand.create(Ariente.MODID, command, argumentBuilder.build()));
     }
 
     public static void sendToServer(String command) {
-        PacketDistributor.sendToServer(PacketSendServerCommand.create(Ariente.MODID, command, TypedMap.EMPTY));
+        ClientNetworking.sendToServer(PacketSendServerCommand.create(Ariente.MODID, command, TypedMap.EMPTY));
     }
 
     public static void sendToClient(Player player, String command, @Nonnull TypedMap.Builder argumentBuilder) {
-        PacketDistributor.sendToPlayer((ServerPlayer) player, PacketSendClientCommand.create(Ariente.MODID, command, argumentBuilder.build()));
+        Packets.sendToPlayer((ServerPlayer) player, PacketSendClientCommand.create(Ariente.MODID, command, argumentBuilder.build()));
     }
 
     public static void sendToClient(Player player, String command) {
-        PacketDistributor.sendToPlayer((ServerPlayer) player, PacketSendClientCommand.create(Ariente.MODID, command, TypedMap.EMPTY));
+        Packets.sendToPlayer((ServerPlayer) player, PacketSendClientCommand.create(Ariente.MODID, command, TypedMap.EMPTY));
     }
 }

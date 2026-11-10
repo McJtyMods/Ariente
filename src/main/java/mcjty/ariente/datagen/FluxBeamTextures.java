@@ -1,7 +1,6 @@
 package mcjty.ariente.datagen;
 
 import com.google.common.hash.Hashing;
-import com.mojang.blaze3d.platform.NativeImage;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.concurrent.CompletableFuture;
@@ -9,27 +8,22 @@ import mcjty.ariente.Ariente;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 /** Projects the existing straight-beam stripe onto a continuous west-to-south turn. */
 public class FluxBeamTextures implements DataProvider {
 
     private final PackOutput output;
 
-    public FluxBeamTextures(PackOutput output, ExistingFileHelper helper) {
+    public FluxBeamTextures(PackOutput output) {
         this.output = output;
-        helper.trackGenerated(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "block/machines/flux_bend_beam"),
-                PackType.CLIENT_RESOURCES, ".png", "textures");
     }
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
         return CompletableFuture.runAsync(() -> {
             try (var input = Ariente.class.getResourceAsStream("/assets/ariente/textures/block/machines/flux_beam.png");
-                 NativeImage strip = NativeImage.read(input);
-                 NativeImage bend = new NativeImage(64, 64, false)) {
+                 PngImage strip = PngImage.read(input);
+                 PngImage bend = new PngImage(64, 64, false)) {
                 for (int x = 0; x < 64; x++) {
                     for (int z = 0; z < 64; z++) {
                         double dx = (x + .5) / 4 - 8;

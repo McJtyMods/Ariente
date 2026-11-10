@@ -1,5 +1,8 @@
 package mcjty.ariente.items;
 
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionHand;
+
 import java.util.List;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.items.modules.ModuleSupport;
@@ -19,7 +22,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 
-public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltipSettings {
+public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltipSettings , AttributeItem {
 
     private final TooltipBuilder tooltipBuilder = WeaponModuleSupport.createTooltipBuilder();
 
@@ -52,7 +55,7 @@ public class EnhancedEnergySabreItem extends EnergySabreItem implements ITooltip
     }
 
     @Override
-    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+    public boolean allowComponentsUpdateAnimation(Player player, InteractionHand hand, ItemStack oldStack, ItemStack newStack) {
         return false;
     }
 

@@ -20,6 +20,10 @@ import mcjty.ariente.display.CameraDisplayModule;
 import mcjty.ariente.display.CameraView;
 import mcjty.ariente.display.CameraViewClipper;
 import mcjty.ariente.display.InstalledModule;
+import mcjty.lib.client.ModelData;
+import mcjty.lib.client.ModelTools;
+import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -41,8 +45,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Matrix4f;
 
 /**
@@ -202,21 +204,21 @@ public class CameraDisplayRenderer {
             BlockState state = entry.getValue();
             BakedModel model = mc.getBlockRenderer().getBlockModel(state);
             boolean translucent = translucentStates.computeIfAbsent(state,
-                    key -> model.getRenderTypes(key, random, ModelData.EMPTY).contains(RenderType.translucent()));
+                    key -> ModelTools.renderTypes(model, key, random, ModelData.EMPTY).contains(RenderType.translucent()));
             if (state.getRenderShape() != RenderShape.MODEL) {
                 // Fluids and blocks with special renderers use a textured silhouette, never a live renderer.
                 if (!state.getFluidState().isEmpty()) {
                     var fluid = state.getFluidState();
-                    var visuals = IClientFluidTypeExtensions.of(fluid);
-                    var sprite = mc.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(visuals.getStillTexture());
+                    var variant = FluidVariant.of(fluid.getType());
+                    var sprite = mc.getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(FluidVariantRendering.getSprite(variant).contents().name());
                     box(faces, pos.getX() - .5, pos.getY() - .5, pos.getZ() - .5,
-                            pos.getX() + .5, pos.getY() - .5 + fluid.getOwnHeight(), pos.getZ() + .5, sprite, visuals.getTintColor(),
+                            pos.getX() + .5, pos.getY() - .5 + fluid.getOwnHeight(), pos.getZ() + .5, sprite, FluidVariantRendering.getColor(variant),
                             ItemBlockRenderTypes.getRenderLayer(fluid) == RenderType.translucent());
                 } else if (!state.getShape(EmptyBlockGetter.INSTANCE, pos).isEmpty()) {
                     var bounds = state.getShape(EmptyBlockGetter.INSTANCE, pos).bounds();
                     box(faces, pos.getX() + bounds.minX - .5, pos.getY() + bounds.minY - .5, pos.getZ() + bounds.minZ - .5,
                             pos.getX() + bounds.maxX - .5, pos.getY() + bounds.maxY - .5, pos.getZ() + bounds.maxZ - .5,
-                            model.getParticleIcon(ModelData.EMPTY), 0xffffff, translucent);
+                            model.getParticleIcon(), 0xffffff, translucent);
                 }
                 if (faces.size() > MAX_QUADS) {
                     faces.subList(layerStart, faces.size()).clear();
@@ -231,7 +233,7 @@ public class CameraDisplayRenderer {
                     continue;
                 }
                 random.setSeed(state.getSeed(pos));
-                for (BakedQuad quad : model.getQuads(state, direction, random, ModelData.EMPTY, null)) {
+                for (BakedQuad quad : ModelTools.quads(model, state, direction, random, ModelData.EMPTY, null)) {
                     if (faces.size() > MAX_QUADS) {
                         break;
                     }

@@ -1,12 +1,14 @@
 package mcjty.ariente.items;
 
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.parameter;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.recipes.BlueprintExchangeRecipe;
@@ -19,8 +21,6 @@ import mcjty.lib.tooltips.ITooltipExtras;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.JSonTools;
 import mcjty.lib.varia.Tools;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -29,11 +29,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import org.apache.commons.lang3.tuple.Pair;
-
-import static mcjty.lib.builder.TooltipBuilder.header;
-import static mcjty.lib.builder.TooltipBuilder.parameter;
 
 public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSettings {
 
@@ -44,22 +40,6 @@ public class BlueprintItem extends Item implements ITooltipExtras, ITooltipSetti
         super(new Properties()
                 // @todo 1.18 .setISTER(BlueprintRenderer::createRenderer)
                 .stacksTo(1));
-    }
-
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            private BlueprintRenderer renderer;
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (renderer == null) {
-                    Minecraft mc = Minecraft.getInstance();
-                    renderer = new BlueprintRenderer(mc.getBlockEntityRenderDispatcher(), mc.getEntityModels());
-                }
-                return renderer;
-            }
-        });
     }
 
     @Override

@@ -3,27 +3,25 @@ package mcjty.ariente.datagen;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
 import mcjty.ariente.setup.Registration;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.data.tags.IntrinsicHolderTagsProvider;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-public class ItemTags extends ItemTagsProvider {
+public class ItemTags extends IntrinsicHolderTagsProvider<Item> {
 
-    public ItemTags(PackOutput generator, CompletableFuture<HolderLookup.Provider> lookup, BlockTagsProvider blockTags, ExistingFileHelper helper) {
-        super(generator, lookup, blockTags.contentsGetter(), Ariente.MODID, helper);
+    public ItemTags(PackOutput generator, CompletableFuture<HolderLookup.Provider> lookup, BlockTags blockTags) {
+        super(generator, Registries.ITEM, lookup, value -> BuiltInRegistries.ITEM.getResourceKey(value).orElseThrow());
     }
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        addTag(Tags.Items.ORES,
+        addTag(CommonTags.Items.ORES,
                 Registration.ORE_POSIRITE_ITEM.get(),
                 Registration.ORE_NEGARITE_ITEM.get(),
                 Registration.ORE_SILICON_ITEM.get(),
@@ -38,18 +36,21 @@ public class ItemTags extends ItemTagsProvider {
         addTag(Registration.TAG_ORE_LITHIUM_ITEM, Registration.ORE_LITHIUM_ITEM.get());
         addTag(Registration.TAG_ORE_MANGANESE_ITEM, Registration.ORE_MANGANESE_ITEM.get());
         addTag(Registration.TAG_ORE_PLATINUM_ITEM, Registration.ORE_PLATINUM_ITEM.get());
-        copy(Tags.Blocks.ORE_RATES_SINGULAR, Tags.Items.ORE_RATES_SINGULAR);
-        copy(Tags.Blocks.ORE_RATES_DENSE, Tags.Items.ORE_RATES_DENSE);
-        copy(Tags.Blocks.ORES_IN_GROUND_STONE, Tags.Items.ORES_IN_GROUND_STONE);
+        addTag(CommonTags.Items.ORE_RATES_SINGULAR, Registration.ORE_LITHIUM_ITEM.get(), Registration.ORE_MANGANESE_ITEM.get(),
+                Registration.ORE_PLATINUM_ITEM.get(), Registration.ORE_SILVER_ITEM.get(), Registration.ORE_SILICON_ITEM.get());
+        addTag(CommonTags.Items.ORE_RATES_DENSE, Registration.ORE_NEGARITE_ITEM.get(), Registration.ORE_POSIRITE_ITEM.get());
+        addTag(CommonTags.Items.ORES_IN_GROUND_STONE, Registration.ORE_LITHIUM_ITEM.get(), Registration.ORE_MANGANESE_ITEM.get(),
+                Registration.ORE_PLATINUM_ITEM.get(), Registration.ORE_SILVER_ITEM.get(), Registration.ORE_SILICON_ITEM.get(),
+                Registration.ORE_NEGARITE_ITEM.get(), Registration.ORE_POSIRITE_ITEM.get());
 
-        tag(Tags.Items.RAW_MATERIALS).addTags(Registration.TAG_RAW_LITHIUM, Registration.TAG_RAW_SILVER,
-                Registration.TAG_RAW_PLATINUM, Registration.TAG_RAW_MANGANESE);
+        tag(CommonTags.Items.RAW_MATERIALS).addTag(Registration.TAG_RAW_LITHIUM).addTag(Registration.TAG_RAW_SILVER)
+                .addTag(Registration.TAG_RAW_PLATINUM).addTag(Registration.TAG_RAW_MANGANESE);
         addTag(Registration.TAG_RAW_LITHIUM, Registration.RAW_LITHIUM.get());
         addTag(Registration.TAG_RAW_SILVER, Registration.RAW_SILVER.get());
         addTag(Registration.TAG_RAW_PLATINUM, Registration.RAW_PLATINUM.get());
         addTag(Registration.TAG_RAW_MANGANESE, Registration.RAW_MANGANESE.get());
 
-        addTag(Tags.Items.INGOTS,
+        addTag(CommonTags.Items.INGOTS,
                 Registration.INGOT_LITHIUM.get(),
                 Registration.INGOT_SILVER.get(),
                 Registration.INGOT_PLATINUM.get(),
@@ -59,7 +60,7 @@ public class ItemTags extends ItemTagsProvider {
         addTag(Registration.TAG_INGOT_PLATINUM, Registration.INGOT_PLATINUM.get());
         addTag(Registration.TAG_INGOT_MANGANESE, Registration.INGOT_MANGANESE.get());
 
-        addTag(Tags.Items.DUSTS,
+        addTag(CommonTags.Items.DUSTS,
                 Registration.DUST_NEGARITE.get(),
                 Registration.DUST_POSIRITE.get(),
                 Registration.DUST_SILICON.get());

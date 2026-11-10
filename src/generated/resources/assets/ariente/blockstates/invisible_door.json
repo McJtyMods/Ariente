@@ -1,6 +1,27 @@
 {
   "variants": {
-    "": {
+    "facing=east,open=false": {
+      "model": "ariente:block/base/empty"
+    },
+    "facing=east,open=true": {
+      "model": "ariente:block/base/empty"
+    },
+    "facing=north,open=false": {
+      "model": "ariente:block/base/empty"
+    },
+    "facing=north,open=true": {
+      "model": "ariente:block/base/empty"
+    },
+    "facing=south,open=false": {
+      "model": "ariente:block/base/empty"
+    },
+    "facing=south,open=true": {
+      "model": "ariente:block/base/empty"
+    },
+    "facing=west,open=false": {
+      "model": "ariente:block/base/empty"
+    },
+    "facing=west,open=true": {
       "model": "ariente:block/base/empty"
     }
   }

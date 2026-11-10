@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class MultipartRenderer implements BlockEntityRenderer<MultipartTE> {
 
@@ -19,8 +18,7 @@ public class MultipartRenderer implements BlockEntityRenderer<MultipartTE> {
         for (MultipartTE.Part part : tile.getParts().values()) {
             if (part.getState().is(Registration.FIELD_MARKER.get())) {
                 // World lightmap only: item/entity diffuse lights rotate with the view.
-                Minecraft.getInstance().getBlockRenderer().renderSingleBlock(part.getState(), pose, buffers, light, overlay,
-                        ModelData.EMPTY, ArienteRenderType.FIELD_MARKER);
+                Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(pose.last(), buffers.getBuffer(ArienteRenderType.FIELD_MARKER), part.getState(), Minecraft.getInstance().getBlockRenderer().getBlockModel(part.getState()), 1, 1, 1, light, overlay);
             } else {
                 Minecraft.getInstance().getBlockRenderer().renderSingleBlock(part.getState(), pose, buffers, light, overlay);
             }

@@ -4,11 +4,12 @@ import com.mojang.blaze3d.platform.InputConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.settings.KeyConflictContext;
 
 public class Binding {
+
+    private static final String CATEGORY = "key.categories.ariente";
 
     private final String name;
     private final KeyMapping binding;
@@ -19,7 +20,7 @@ public class Binding {
     private Binding(String name, int keyCode, Runnable callable) {
         this.name = name;
         this.callable = callable;
-        binding = new KeyMapping(name, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, keyCode, "key.categories.ariente");
+        binding = new KeyMapping(name, InputConstants.Type.KEYSYM, keyCode, CATEGORY);
     }
 
     public static Binding create(String name, int keyCode, Runnable callable) {
@@ -40,9 +41,13 @@ public class Binding {
         binding.setDown(false);
     }
 
-    public static void register(RegisterKeyMappingsEvent event) {
+    public static void register() {
         KeyBindings.init();
-        BINDINGS.forEach(binding -> event.register(binding.binding));
+        BINDINGS.forEach(binding -> KeyBindingHelper.registerKeyBinding(binding.binding));
+    }
+
+    public static boolean isBoundTo(InputConstants.Key key) {
+        return BINDINGS.stream().anyMatch(binding -> KeyBindingHelper.getBoundKeyOf(binding.binding).equals(key));
     }
 
     public static void checkBindings() {

@@ -1,5 +1,9 @@
 package mcjty.ariente.cables;
 
+import static mcjty.ariente.cables.CablePatterns.SpriteIdx.*;
+import static mcjty.ariente.cables.ConnectorType.BLOCK;
+import static mcjty.ariente.cables.ConnectorType.CABLE;
+
 import com.google.common.base.Function;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +12,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.lib.client.AbstractDynamicBakedModel;
+import mcjty.lib.client.ChunkRenderTypeSet;
+import mcjty.lib.client.ModelData;
+import mcjty.lib.client.ModelProperty;
+import mcjty.lib.client.ModelTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -22,13 +30,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
-
-import static mcjty.ariente.cables.CablePatterns.SpriteIdx.*;
-import static mcjty.ariente.cables.ConnectorType.BLOCK;
-import static mcjty.ariente.cables.ConnectorType.CABLE;
 
 public class GenericCableBakedModel extends AbstractDynamicBakedModel {
 
@@ -148,7 +149,7 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
         BlockState facade = data.get(GenericCableBlock.FACADEID);
         if (facade != null) {
             BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(facade);
-            return model.getRenderTypes(facade, random, ModelData.EMPTY);
+            return ModelTools.renderTypes(model, facade, random, ModelData.EMPTY);
         }
         return ChunkRenderTypeSet.of(RenderType.cutout());
     }
@@ -167,10 +168,10 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
         BlockState facadeId = extraData.get(GenericCableBlock.FACADEID);
         if (facadeId != null) {
             BlockState facadeState = facadeId; // @todo 1.18 facadeId.getBlockState();
-            if (layer == null || Minecraft.getInstance().getBlockRenderer().getBlockModel(facadeState).getRenderTypes(facadeState, rand, ModelData.EMPTY).contains(layer)) { // always render in the null layer or the block-breaking textures don't show up
+            if (layer == null || ModelTools.renderTypes(Minecraft.getInstance().getBlockRenderer().getBlockModel(facadeState), facadeState, rand, ModelData.EMPTY).contains(layer)) { // always render in the null layer or the block-breaking textures don't show up
                 BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getBlockModel(facadeState);
                 try {
-                    return new ArrayList<>(model.getQuads(facadeState, side, rand, ModelData.EMPTY, layer));
+                    return new ArrayList<>(ModelTools.quads(model, facadeState, side, rand, ModelData.EMPTY, layer));
                 } catch (Exception e) {
                 }
             }
@@ -376,7 +377,6 @@ public class GenericCableBakedModel extends AbstractDynamicBakedModel {
         return cableTextures[CableColor.NEGARITE.ordinal()].spriteNormalCable;
     }
 
-    @Override
     public TextureAtlasSprite getParticleIcon(ModelData data) {
         BlockState facade = data.get(GenericCableBlock.FACADEID);
         if (facade != null) {

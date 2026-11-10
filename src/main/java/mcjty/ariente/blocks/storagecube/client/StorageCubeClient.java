@@ -1,40 +1,33 @@
 package mcjty.ariente.blocks.storagecube.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import mcjty.ariente.Ariente;
-import mcjty.ariente.blocks.storagecube.PacketStorageCubeAction;
-import mcjty.ariente.blocks.storagecube.PacketStorageCubeData;
-import mcjty.ariente.blocks.storagecube.StorageCubePanel;
-import mcjty.ariente.blocks.storagecube.StorageCubeTile;
-import mcjty.ariente.gui.client.InventoryRenderer;
-import mcjty.hologui.api.IGuiComponent;
-import mcjty.hologui.api.IHoloGuiEntity;
-import mcjty.hologui.gui.HoloGuiEntity;
-import mcjty.hologui.gui.HoloGuiRenderTools;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.EntityHitResult;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-
 import static mcjty.ariente.blocks.storagecube.PacketStorageCubeAction.Action.*;
 import static mcjty.ariente.gui.InventoryLayout.*;
 import static mcjty.ariente.gui.client.InventoryRenderer.count;
 import static mcjty.ariente.gui.client.InventoryRenderer.item;
 import static mcjty.hologui.api.IGuiTile.TAG_HELP;
 
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import mcjty.ariente.blocks.storagecube.PacketStorageCubeAction;
+import mcjty.ariente.blocks.storagecube.PacketStorageCubeData;
+import mcjty.ariente.blocks.storagecube.StorageCubePanel;
+import mcjty.ariente.blocks.storagecube.StorageCubeTile;
+import mcjty.ariente.client.InputGesture;
+import mcjty.ariente.gui.client.InventoryRenderer;
+import mcjty.hologui.api.IGuiComponent;
+import mcjty.hologui.api.IHoloGuiEntity;
+import mcjty.hologui.gui.HoloGuiEntity;
+import mcjty.hologui.gui.HoloGuiRenderTools;
+import mcjty.lib.network.ClientNetworking;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.EntityHitResult;
+
 public class StorageCubeClient {
 
     private static final double STORAGE_Y = .7;
@@ -92,7 +85,7 @@ public class StorageCubeClient {
     }
 
     private static void send(PacketStorageCubeAction packet) {
-        PacketDistributor.sendToServer(packet);
+        ClientNetworking.sendToServer(packet);
     }
 
     public static void receive(PacketStorageCubeData packet) {
@@ -116,8 +109,7 @@ public class StorageCubeClient {
         }
     }
 
-    @SubscribeEvent
-    public static void input(InputEvent.InteractionKeyMappingTriggered event) {
+    public static void input(InputGesture event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.screen != null || !(event.isAttack() || event.isUseItem())) {
             return;
@@ -227,15 +219,7 @@ public class StorageCubeClient {
         state.scrollTicks = 0;
     }
 
-    @SubscribeEvent
-    public static void blockAttack(PlayerInteractEvent.LeftClickBlock event) {
-        if (event.getLevel().isClientSide && state != null && state.pressed) {
-            event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
-    public static void tick(ClientTickEvent.Post event) {
+    public static void tick() {
         Minecraft mc = Minecraft.getInstance();
         for (Iterator<State> iterator = VIEWS.values().iterator(); iterator.hasNext();) {
             State view = iterator.next();

@@ -9,11 +9,12 @@ import mcjty.ariente.blocks.decorative.PatternType;
 import mcjty.ariente.recipes.BlueprintExchangeRecipe;
 import mcjty.ariente.setup.Registration;
 import mcjty.lib.datagen.BaseRecipeProvider;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
@@ -30,16 +31,15 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.level.ItemLike;
-import net.neoforged.neoforge.common.conditions.ICondition;
 
 public class Recipes extends BaseRecipeProvider {
 
-    public Recipes(DataGenerator generatorIn, CompletableFuture<HolderLookup.Provider> provider) {
-        super(generatorIn, provider);
+    public Recipes(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> provider) {
+        super(output, provider);
     }
 
     @Override
-    protected void buildRecipes(RecipeOutput consumer) {
+    public void buildRecipes(RecipeOutput consumer) {
         blueprintExchange(consumer);
         build(consumer, ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.TABLET.get())
                         .define('I', Items.IRON_INGOT)
@@ -85,7 +85,7 @@ public class Recipes extends BaseRecipeProvider {
             build(consumer, ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "marble_" + color.getSerializedName() + "_dye"), ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, DecorativeBlockModule.MARBLE_ITEMS.get(color).get())
                         .unlockedBy("marble", has(DecorativeBlockModule.MARBLE.get(color).get()))
                         .requires(Registration.TAG_MARBLE)
-                        .requires(color.getColor().getTag()));
+                        .requires(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "dyes/" + color.getColor().getName()))));
             build(consumer, ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, DecorativeBlockModule.MARBLE_SMOOTH_ITEMS.get(color).get())
                         .unlockedBy("marble", has(DecorativeBlockModule.MARBLE.get(color).get()))
                         .requires(DecorativeBlockModule.MARBLE_ITEMS.get(color).get()));
@@ -198,8 +198,8 @@ public class Recipes extends BaseRecipeProvider {
                     }
 
                     @Override
-                    public void accept(ResourceLocation id, Recipe<?> recipe, AdvancementHolder advancement, ICondition... conditions) {
-                        consumer.accept(id, new BlueprintExchangeRecipe(CraftingBookCategory.MISC), advancement, conditions);
+                    public void accept(ResourceLocation id, Recipe<?> recipe, AdvancementHolder advancement) {
+                        consumer.accept(id, new BlueprintExchangeRecipe(CraftingBookCategory.MISC), advancement);
                     }
                 }, BlueprintExchangeRecipe.ID);
     }
@@ -233,7 +233,7 @@ public class Recipes extends BaseRecipeProvider {
             }
 
             @Override
-            public void accept(ResourceLocation id, Recipe<?> recipe, AdvancementHolder advancement, ICondition... conditions) {
+            public void accept(ResourceLocation id, Recipe<?> recipe, AdvancementHolder advancement) {
                 if (recipe instanceof SmeltingRecipe cooking) {
                     recipe = new SmeltingRecipe(cooking.getGroup(), cooking.category(), cooking.getIngredients().getFirst(),
                             new ItemStack(cooking.getResultItem(null).getItem(), count), cooking.getExperience(), cooking.getCookingTime());
@@ -241,7 +241,7 @@ public class Recipes extends BaseRecipeProvider {
                     recipe = new BlastingRecipe(cooking.getGroup(), cooking.category(), cooking.getIngredients().getFirst(),
                             new ItemStack(cooking.getResultItem(null).getItem(), count), cooking.getExperience(), cooking.getCookingTime());
                 }
-                consumer.accept(id, recipe, advancement, conditions);
+                consumer.accept(id, recipe, advancement);
             }
         };
     }

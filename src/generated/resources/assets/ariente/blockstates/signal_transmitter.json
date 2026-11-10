@@ -32,11 +32,11 @@
     },
     "facing=up,power=false": {
       "model": "ariente:block/machines/signal_transmitter_off",
-      "x": -90
+      "x": 270
     },
     "facing=up,power=true": {
       "model": "ariente:block/machines/signal_transmitter_on",
-      "x": -90
+      "x": 270
     },
     "facing=west,power=false": {
       "model": "ariente:block/machines/signal_transmitter_off",

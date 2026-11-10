@@ -1,17 +1,17 @@
 package mcjty.ariente.blocks.purifier;
 
+import static mcjty.ariente.gui.InventoryLayout.CELL;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.gui.client.InventoryRenderer;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.gui.components.HoloSlots;
+import mcjty.lib.container.IItemHandler;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.items.IItemHandler;
-
-import static mcjty.ariente.gui.InventoryLayout.CELL;
 
 /** A machine slot with the same icon depth and count placement as the player inventory. */
 public class PurifierSlot extends HoloSlots {
@@ -26,7 +26,7 @@ public class PurifierSlot extends HoloSlots {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void render(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
         ItemStack stack = items.getStackInSlot(0);
         InventoryRenderer.cell(poses, buffer, x, y, stack, stack.getCount(), selected == 0 || isInside(cursorX, cursorY));

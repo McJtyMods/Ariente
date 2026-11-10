@@ -783,6 +783,7 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
                 case SOUTH -> RailShape.ASCENDING_SOUTH;
                 case WEST -> RailShape.ASCENDING_WEST;
                 case EAST -> RailShape.ASCENDING_EAST;
+
                 default -> throw new IllegalArgumentException("Flux slopes must face horizontally");
             };
         } else if (state.getBlock() == Registration.FLUX_BEAM.get()) {
@@ -1201,4 +1202,5 @@ public class FluxLevitatorEntity extends Entity implements IFluxLevitatorEntity 
         mZ = Mth.clamp(mZ, -max, max);
         this.move(MoverType.SELF, new Vec3(mX, 0.0D, mZ));
     }
+
 }

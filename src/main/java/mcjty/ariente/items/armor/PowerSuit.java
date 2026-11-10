@@ -1,13 +1,12 @@
 package mcjty.ariente.items.armor;
 
-import net.minecraft.world.item.*;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.bindings.KeyBindings;
+import mcjty.ariente.items.AttributeItem;
 import mcjty.ariente.items.ItemData;
 import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.ChatFormatting;
@@ -24,15 +23,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class PowerSuit extends ArmorItem {
+public class PowerSuit extends ArmorItem implements AttributeItem {
 
     private final EquipmentSlot slot;
 
@@ -59,23 +57,20 @@ public class PowerSuit extends ArmorItem {
         return false;
     }
 
-    @Override
     public int getMaxDamage(ItemStack stack) {
         return 0;
     }
 
     @Nullable
-    @Override
     public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
         return ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "textures/armor/suit.png");
     }
 
-    @Override
     public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         boolean upgraded = ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.ARMOR);
         EquipmentSlotGroup group = EquipmentSlotGroup.bySlot(slot);
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "armor_" + slot.getName());
-        ItemAttributeModifiers modifiers = super.getDefaultAttributeModifiers(stack)
+        ItemAttributeModifiers modifiers = super.getDefaultAttributeModifiers()
                 .withModifierAdded(Attributes.ARMOR, new AttributeModifier(id, upgraded ? 6 : 0, AttributeModifier.Operation.ADD_VALUE), group)
                 .withModifierAdded(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(id, upgraded ? 4 : 0, AttributeModifier.Operation.ADD_VALUE), group);
         if (slot == EquipmentSlot.FEET && ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.STEPASSIST)) {
@@ -85,7 +80,18 @@ public class PowerSuit extends ArmorItem {
         return modifiers;
     }
 
-    public static void absorbEnergyDamage(LivingDamageEvent.Pre event) {
+    @Override
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
+        if (!world.isClientSide && entity instanceof LivingEntity living) {
+            if (living.isAlive() && living.getItemBySlot(slot) == stack) {
+                ModuleSupport.updateWorkingState(stack, living);
+            } else {
+                ModuleSupport.clearWorkingState(stack);
+            }
+        }
+    }
+
+    public static void absorbEnergyDamage(DamageContext event) {
         LivingEntity entity = event.getEntity();
         DamageSource source = event.getSource();
         if (entity.level().isClientSide || event.getNewDamage() <= 0 || !source.is(DamageTypeTags.BYPASSES_ARMOR)
@@ -106,22 +112,6 @@ public class PowerSuit extends ArmorItem {
         // Each working piece absorbs 20%; a full suit leaves 20% for the forcefield to handle.
         if (upgrades > 0) {
             event.setNewDamage(event.getNewDamage() * (5 - upgrades) / 5.0f);
-        }
-    }
-
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(PowerSuitModel.EXTENSIONS);
-    }
-
-    @Override
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
-        if (!world.isClientSide && entity instanceof LivingEntity living) {
-            if (living.isAlive() && living.getItemBySlot(slot) == stack) {
-                ModuleSupport.updateWorkingState(stack, living);
-            } else {
-                ModuleSupport.clearWorkingState(stack);
-            }
         }
     }
 

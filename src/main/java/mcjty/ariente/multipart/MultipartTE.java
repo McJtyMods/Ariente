@@ -1,5 +1,7 @@
 package mcjty.ariente.multipart;
 
+import static mcjty.ariente.setup.Registration.TYPE_MULTIPART;
+
 import java.util.EnumMap;
 import java.util.Map;
 import mcjty.ariente.blocks.utility.autofield.AutoFieldTile;
@@ -13,7 +15,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -21,14 +22,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
 
-import static mcjty.ariente.setup.Registration.TYPE_MULTIPART;
-
-public class MultipartTE extends BlockEntity {
-
-    public static final ModelProperty<Map<PartSlot, Part>> PARTS = new ModelProperty<>();
+public class MultipartTE extends GenericTileEntity {
 
     public static class Part {
         private final BlockState state;
@@ -95,20 +90,6 @@ public class MultipartTE extends BlockEntity {
     }
 
     @Override
-    public ModelData getModelData() {
-        return ModelData.builder().with(PARTS, parts).build();
-    }
-
-    @Override
-    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider provider) {
-        if (packet.getTag() != null) {
-            loadAdditional(packet.getTag(), provider);
-            requestModelDataUpdate();
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
-        }
-    }
-
-    @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
         return saveWithoutMetadata(level.registryAccess());
     }
@@ -121,7 +102,6 @@ public class MultipartTE extends BlockEntity {
     public void markDirtyClient() {
         setChanged();
         if (level != null) {
-            requestModelDataUpdate();
             BlockState state = level.getBlockState(worldPosition);
             level.sendBlockUpdated(worldPosition, state, state, Block.UPDATE_ALL);
         }
@@ -197,7 +177,6 @@ public class MultipartTE extends BlockEntity {
         });
     }
 
-    @Override
     public void saveAdditional(CompoundTag compound, HolderLookup.Provider provider) {
         super.saveAdditional(compound, provider);
         ListTag list = new ListTag();

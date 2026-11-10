@@ -3,7 +3,6 @@ package mcjty.ariente.blocks.generators;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import mcjty.ariente.Ariente;
 import mcjty.ariente.client.ArienteRenderType;
 import mcjty.ariente.display.client.LiveCameraRenderer;
 import net.minecraft.client.Minecraft;
@@ -14,12 +13,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class TankRendererTools {
 
     // Keep every tank's glass and beam in one sorted batch, independently of other entity renderers.
@@ -29,11 +23,8 @@ public class TankRendererTools {
         renderTank(stack, LiveCameraRenderer.buffersForView(WORLD_TANKS), beam, window, working, gameTime, cameraOffset, light);
     }
 
-    @SubscribeEvent
-    public static void renderStage(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
-            WORLD_TANKS.endBatch();
-        }
+    public static void renderStage() {
+        WORLD_TANKS.endBatch();
     }
 
     private static void vertex(VertexConsumer renderer, PoseStack stack, TextureAtlasSprite sprite, float x, float y, float z, float u, float v, int light, Vec3 normal) {

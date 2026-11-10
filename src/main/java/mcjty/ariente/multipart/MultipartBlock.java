@@ -38,7 +38,6 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -68,9 +67,8 @@ public class MultipartBlock extends Block implements WailaInfoProvider, TOPInfoP
         return new MultipartTE(pos, state);
     }
 
-    @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader world, BlockPos pos, Player player) {
-        MultipartTE.Part part = getHitPart(state, world, pos, player.getEyePosition(0), target.getLocation());
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state, boolean includeData, Player player) {
+        MultipartTE.Part part = getHitPart(state, world, pos, player.getEyePosition(0), player.getEyePosition(0).add(player.getLookAngle().scale(player.blockInteractionRange())));
         if (part != null) {
             return new ItemStack(part.getState().getBlock().asItem());
         } else {
@@ -191,9 +189,8 @@ public class MultipartBlock extends Block implements WailaInfoProvider, TOPInfoP
         return stack;
     }
 
-    @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        if (world.isClientSide || !(world.getBlockEntity(pos) instanceof MultipartTE multipart)) {
+    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, ItemStack tool, boolean willHarvest, FluidState fluid) {
+        if (world.isClientSide() || !(world.getBlockEntity(pos) instanceof MultipartTE multipart)) {
             return false;
         }
         Vec3 start = player.getEyePosition();

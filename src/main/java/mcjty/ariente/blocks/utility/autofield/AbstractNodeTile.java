@@ -1,5 +1,8 @@
 package mcjty.ariente.blocks.utility.autofield;
 
+import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
+import static mcjty.hologui.api.Icons.*;
+
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import mcjty.ariente.Ariente;
@@ -11,8 +14,11 @@ import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
 import mcjty.hologui.api.components.IIconChoice;
 import mcjty.hologui.api.components.IPanel;
+import mcjty.lib.container.IItemHandler;
 import mcjty.lib.multipart.PartPos;
 import mcjty.lib.multipart.PartSlot;
+import mcjty.lib.varia.CapabilityTools;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -33,13 +39,8 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-
-import static mcjty.ariente.blocks.utility.autofield.NodeOrientation.*;
-import static mcjty.hologui.api.Icons.*;
 
 public abstract class AbstractNodeTile extends ArienteBlockEntity implements IGuiTile {
 
@@ -324,7 +325,7 @@ public abstract class AbstractNodeTile extends ArienteBlockEntity implements IGu
             }
             BlockEntity otherTe = level.getBlockEntity(otherPos);
             if (otherTe != null) {
-                return Optional.ofNullable(level.getCapability(Capabilities.ItemHandler.BLOCK, otherPos, mainDirection.getOpposite()));
+                return Optional.ofNullable(CapabilityTools.itemHandler(ItemStorage.SIDED.find(level, otherPos, mainDirection.getOpposite())));
             }
         }
         return Optional.empty();

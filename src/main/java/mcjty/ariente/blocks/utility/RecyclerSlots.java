@@ -1,18 +1,18 @@
 package mcjty.ariente.blocks.utility;
 
+import static mcjty.ariente.gui.InventoryLayout.CELL;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import mcjty.ariente.gui.client.InventoryRenderer;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.gui.components.HoloSlots;
+import mcjty.lib.container.IItemHandler;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.tuple.Pair;
-
-import static mcjty.ariente.gui.InventoryLayout.CELL;
 
 /** Fixed machine slots using the same geometry and rendering as the carried inventory. */
 public class RecyclerSlots extends HoloSlots {
@@ -44,7 +44,7 @@ public class RecyclerSlots extends HoloSlots {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void render(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
         int hovered = getSelectedPair(player, cursorX, cursorY).getRight();
         for (int row = 0; row < rows; row++) {

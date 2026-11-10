@@ -3,9 +3,9 @@ package mcjty.ariente.blocks.storagecube;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import mcjty.lib.container.IItemHandlerModifiable;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 /** Reorder complete stacks without changing their counts, tags or item capabilities. */
 public class StorageCubeSort {

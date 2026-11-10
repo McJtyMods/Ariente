@@ -1,0 +1,11 @@
+accessWidener v2 named
+accessible field net/minecraft/server/network/ServerGamePacketListenerImpl aboveGroundTickCount I
+mutable field net/minecraft/client/renderer/GameRenderer mainCamera Lnet/minecraft/client/Camera;
+accessible field net/minecraft/client/renderer/GameRenderer mainCamera Lnet/minecraft/client/Camera;
+mutable field net/minecraft/client/Minecraft mainRenderTarget Lcom/mojang/blaze3d/pipeline/RenderTarget;
+accessible field net/minecraft/client/Minecraft mainRenderTarget Lcom/mojang/blaze3d/pipeline/RenderTarget;
+accessible field net/minecraft/client/renderer/LevelRenderer viewArea Lnet/minecraft/client/renderer/ViewArea;
+accessible class net/minecraft/world/level/block/entity/BlockEntityType$BlockEntitySupplier
+accessible method net/minecraft/client/renderer/block/model/ItemOverrides <init> ()V
+accessible method net/minecraft/client/renderer/LevelRenderer renderSnowAndRain (Lnet/minecraft/client/renderer/LightTexture;FDDD)V
+accessible field net/minecraft/client/renderer/LevelRenderer sectionRenderDispatcher Lnet/minecraft/client/renderer/chunk/SectionRenderDispatcher;

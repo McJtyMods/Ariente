@@ -9,6 +9,10 @@ import java.util.WeakHashMap;
 import mcjty.ariente.items.ItemData;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.components.IPanel;
+import mcjty.lib.container.IItemHandler;
+import mcjty.lib.container.InvWrapper;
+import mcjty.lib.varia.CapabilityTools;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -19,9 +23,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 public class StorageDisplayModule implements DisplayModuleType {
 
@@ -61,9 +62,9 @@ public class StorageDisplayModule implements DisplayModuleType {
     }
 
     public static IItemHandler inventory(BlockEntity tile, Direction side) {
-        IItemHandler handler = tile.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, tile.getBlockPos(), side);
+        IItemHandler handler = CapabilityTools.itemHandler(ItemStorage.SIDED.find(tile.getLevel(), tile.getBlockPos(), side));
         if (handler == null) {
-            handler = tile.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, tile.getBlockPos(), null);
+            handler = CapabilityTools.itemHandler(ItemStorage.SIDED.find(tile.getLevel(), tile.getBlockPos(), null));
         }
         return handler != null ? handler : tile instanceof Container container ? new InvWrapper(container) : null;
     }

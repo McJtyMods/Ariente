@@ -1,32 +1,26 @@
 package mcjty.ariente.setup;
 
-import mcjty.ariente.ForgeEventHandlers;
 import mcjty.ariente.compat.ArienteTOPCompatibility;
-import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.gui.HoloGuiCompatibility;
 import mcjty.lib.compat.MainCompatHandler;
 import mcjty.lib.setup.DefaultModSetup;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.fabricmc.loader.api.FabricLoader;
 
 public class ModSetup extends DefaultModSetup {
 
     public boolean arienteWorld = false;
 
     @Override
-    public void init(FMLCommonSetupEvent e) {
-        super.init(e);
-
-        NeoForge.EVENT_BUS.register(new ForgeEventHandlers());
+    public void init() {
+        super.init();
 
     }
 
     @Override
     protected void setupModCompat() {
-        arienteWorld = ModList.get().isLoaded("arienteworld");
+        arienteWorld = FabricLoader.getInstance().isModLoaded("arienteworld");
         if (arienteWorld) {
-            ArienteWorldCompat.register();
+
         }
 
         MainCompatHandler.registerWaila();

@@ -2,20 +2,13 @@
   "multipart": [
     {
       "apply": {
-        "model": "ariente:block/decorative/tech_fence_pane_post"
+        "model": "ariente:block/decorative/tech_fence_post"
       }
     },
     {
       "apply": {
-        "model": "ariente:block/decorative/tech_fence_pane_side"
-      },
-      "when": {
-        "north": "true"
-      }
-    },
-    {
-      "apply": {
-        "model": "ariente:block/decorative/tech_fence_pane_noside"
+        "model": "ariente:block/decorative/tech_fence_noside",
+        "y": 0
       },
       "when": {
         "north": "false"
@@ -23,42 +16,25 @@
     },
     {
       "apply": {
-        "model": "ariente:block/decorative/tech_fence_pane_side_alt"
+        "model": "ariente:block/decorative/tech_fence_side",
+        "y": 0
       },
       "when": {
-        "south": "true"
+        "north": "true"
       }
     },
     {
       "apply": {
-        "model": "ariente:block/decorative/tech_fence_pane_noside_alt",
+        "model": "ariente:block/decorative/tech_fence_noside",
         "y": 90
       },
       "when": {
-        "south": "false"
+        "east": "false"
       }
     },
     {
       "apply": {
-        "model": "ariente:block/decorative/tech_fence_pane_side_alt",
-        "y": 90
-      },
-      "when": {
-        "west": "true"
-      }
-    },
-    {
-      "apply": {
-        "model": "ariente:block/decorative/tech_fence_pane_noside",
-        "y": 270
-      },
-      "when": {
-        "west": "false"
-      }
-    },
-    {
-      "apply": {
-        "model": "ariente:block/decorative/tech_fence_pane_side",
+        "model": "ariente:block/decorative/tech_fence_side",
         "y": 90
       },
       "when": {
@@ -67,10 +43,38 @@
     },
     {
       "apply": {
-        "model": "ariente:block/decorative/tech_fence_pane_noside_alt"
+        "model": "ariente:block/decorative/tech_fence_noside",
+        "y": 180
       },
       "when": {
-        "east": "false"
+        "south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "ariente:block/decorative/tech_fence_side",
+        "y": 180
+      },
+      "when": {
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "ariente:block/decorative/tech_fence_noside",
+        "y": 270
+      },
+      "when": {
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "ariente:block/decorative/tech_fence_side",
+        "y": 270
+      },
+      "when": {
+        "west": "true"
       }
     }
   ]

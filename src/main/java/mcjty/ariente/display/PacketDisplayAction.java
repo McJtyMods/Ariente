@@ -1,5 +1,6 @@
 package mcjty.ariente.display;
 
+import mcjty.lib.network.PayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -7,7 +8,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /** Sends intent only. The server redoes the ray, occlusion, footprint and overlap checks. */
 public record PacketDisplayAction(BlockPos base, InteractionHand hand, boolean leftClick) implements CustomPacketPayload {
@@ -30,7 +30,7 @@ public record PacketDisplayAction(BlockPos base, InteractionHand hand, boolean l
         buffer.writeBoolean(leftClick);
     }
 
-    public void handle(IPayloadContext context) {
+    public void handle(PayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
             if (player == null || player.isSpectator() || !player.level().hasChunkAt(base)

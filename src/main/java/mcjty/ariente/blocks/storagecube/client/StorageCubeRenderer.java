@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import mcjty.ariente.blocks.storagecube.StorageCubeTile;
+import mcjty.lib.client.VertexConsumerWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -18,7 +19,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
 
 /** Eight cached icons per visible cube. No entities, packets, inventory scans or per-frame random sampling. */
 public class StorageCubeRenderer implements BlockEntityRenderer<StorageCubeTile> {

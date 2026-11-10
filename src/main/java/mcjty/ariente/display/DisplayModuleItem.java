@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.items.EarlyUseItem;
 import mcjty.ariente.items.ItemData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -20,7 +21,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
-public class DisplayModuleItem extends Item {
+public class DisplayModuleItem extends Item  implements EarlyUseItem {
 
     private final DisplayModuleType type;
 

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import mcjty.ariente.client.VertexConsumerWrapper;
 import mcjty.ariente.display.client.DisplayCanvas;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.gui.HoloGuiEntity;
@@ -16,7 +17,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.model.pipeline.VertexConsumerWrapper;
 
 /** Rotate the cockpit instruments in the same cabin frame as the hull. */
 public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
@@ -102,7 +102,12 @@ public class FluxShipPanelRender extends EntityRenderer<HoloGuiEntity> {
         float charge = ship.getChargeRatio();
         int color = charge <= .1f ? 0xffff6050 : charge <= .25f ? 0xffffcf60 : 0xff70edff;
         canvas.fill(-.465f, -.475f, .93f, .035f, 0xd0081820);
+        // The opaque charge fill must be closer than its translucent background.
+        // Coplanar quads fight in the depth buffer as the cockpit view moves.
+        canvas.poses().pushPose();
+        canvas.poses().translate(0, 0, .001f);
         canvas.fill(-.46f, -.47f, .92f * charge, .025f, color);
+        canvas.poses().popPose();
         // Text uses font pixel coordinates, while this canvas is in cockpit coordinates with Y upwards.
         canvas.poses().pushPose();
         canvas.poses().translate(-.46f, -.405f, .001f);

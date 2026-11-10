@@ -1,7 +1,6 @@
 package mcjty.ariente;
 
 import mcjty.ariente.blocks.decorative.DecorativeBlockModule;
-import mcjty.ariente.setup.Registration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -27,9 +26,9 @@ public class MiningTests {
     public static void pickaxesWorkOnAllPhysicalBlocks(GameTestHelper helper) {
         ItemStack pickaxe = new ItemStack(Items.NETHERITE_PICKAXE);
         int checked = 0;
-        for (var entry : Registration.BLOCKS.getEntries()) {
+        for (var entry : mcjty.ariente.setup.Registration.BLOCKS.getEntries()) {
             Block block = entry.get();
-            if (block == Registration.FLUX_GLOW.get() || block == Registration.INVISIBLE_DOOR.get()) {
+            if (block == mcjty.ariente.setup.Registration.FLUX_GLOW.get() || block == mcjty.ariente.setup.Registration.INVISIBLE_DOOR.get()) {
                 continue;
             }
             var state = block.defaultBlockState();
@@ -61,9 +60,9 @@ public class MiningTests {
 
     @GameTest(template = "empty")
     public static void aiCoreTakesTenSecondsWithNetherite(GameTestHelper helper) {
-        int ticks = miningTicks(helper, miner(helper), Registration.AICORE.get());
+        int ticks = miningTicks(helper, miner(helper), mcjty.ariente.setup.Registration.AICORE.get());
         helper.assertTrue(Math.abs(ticks - 200) <= 1, "AI Core should take 10 seconds with unenchanted netherite, got " + ticks + " ticks");
-        helper.assertTrue(Registration.AICORE.get().getExplosionResistance() == 800, "AI Core blast resistance must stay at 800");
+        helper.assertTrue(mcjty.ariente.setup.Registration.AICORE.get().getExplosionResistance() == 800, "AI Core blast resistance must stay at 800");
         Ariente.setup.getLogger().info("MINING CHECK: AI Core takes {} ticks with netherite", ticks);
         helper.succeed();
     }
@@ -72,8 +71,8 @@ public class MiningTests {
     public static void oresStillRequireStoneOrBetter(GameTestHelper helper) {
         ItemStack wood = new ItemStack(Items.WOODEN_PICKAXE);
         ItemStack stone = new ItemStack(Items.STONE_PICKAXE);
-        for (Block ore : new Block[]{Registration.ORE_LITHIUM.get(), Registration.ORE_MANGANESE.get(), Registration.ORE_PLATINUM.get(),
-                Registration.ORE_SILVER.get(), Registration.ORE_SILICON.get(), Registration.ORE_NEGARITE.get(), Registration.ORE_POSIRITE.get()}) {
+        for (Block ore : new Block[]{mcjty.ariente.setup.Registration.ORE_LITHIUM.get(), mcjty.ariente.setup.Registration.ORE_MANGANESE.get(), mcjty.ariente.setup.Registration.ORE_PLATINUM.get(),
+                mcjty.ariente.setup.Registration.ORE_SILVER.get(), mcjty.ariente.setup.Registration.ORE_SILICON.get(), mcjty.ariente.setup.Registration.ORE_NEGARITE.get(), mcjty.ariente.setup.Registration.ORE_POSIRITE.get()}) {
             helper.assertTrue(!wood.isCorrectToolForDrops(ore.defaultBlockState()) && stone.isCorrectToolForDrops(ore.defaultBlockState()),
                     "Ore harvest tiers must stay unchanged: " + ore);
         }

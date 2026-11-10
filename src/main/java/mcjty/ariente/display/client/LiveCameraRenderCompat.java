@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
@@ -22,7 +23,6 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.ModList;
 
 /** Optional renderer adapters. Only mod-owned names are reflected; no dependency is required to run Ariente. */
 final class LiveCameraRenderCompat {
@@ -36,10 +36,10 @@ final class LiveCameraRenderCompat {
         if (!initialized) {
             initialized = true;
             try {
-                if (ModList.get().isLoaded("oculus") || ModList.get().isLoaded("iris")) {
+                if (FabricLoader.getInstance().isModLoaded("oculus") || FabricLoader.getInstance().isModLoaded("iris")) {
                     iris = new Iris();
                 }
-                if (ModList.get().isLoaded("embeddium") || ModList.get().isLoaded("rubidium")) {
+                if (FabricLoader.getInstance().isModLoaded("embeddium") || FabricLoader.getInstance().isModLoaded("rubidium")) {
                     embeddium = new Embeddium();
                 }
             } catch (ReflectiveOperationException | LinkageError exception) {

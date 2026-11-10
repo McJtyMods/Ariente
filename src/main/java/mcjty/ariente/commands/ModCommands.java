@@ -1,5 +1,6 @@
 package mcjty.ariente.commands;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.api.ArmorUpgradeType;
@@ -15,18 +16,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
-@EventBusSubscriber(modid = Ariente.MODID)
 public class ModCommands {
 
     private static final int FUEL_PAIRS = 1_000_000;
 
-    @SubscribeEvent
-    public static void register(RegisterCommandsEvent event) {
-        event.getDispatcher().register(Commands.literal(Ariente.MODID)
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        dispatcher.register(Commands.literal(Ariente.MODID)
                 .requires(source -> source.hasPermission(2))
                 .then(Commands.literal("equip").executes(context -> equip(context.getSource()))));
     }

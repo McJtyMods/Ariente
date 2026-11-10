@@ -545,4 +545,5 @@ public class FluxShipEntity extends Entity {
         // Keep the rear exhaust visible when the hull itself is just outside the view.
         return getBoundingBox().inflate(26);
     }
+
 }

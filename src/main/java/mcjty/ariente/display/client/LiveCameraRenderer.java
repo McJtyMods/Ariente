@@ -22,6 +22,7 @@ import mcjty.ariente.display.CameraDisplayModule;
 import mcjty.ariente.display.InstalledModule;
 import mcjty.ariente.display.LiveCameraView;
 import mcjty.hologui.gui.HoloGuiEntity;
+import mcjty.lib.tileentity.GenericTileEntity;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
@@ -41,6 +42,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -274,7 +276,7 @@ public class LiveCameraRenderer {
                     terrain(chunks, nativeTerrain, RenderType.translucent(), poses, projection, eye);
                     terrain(chunks, nativeTerrain, RenderType.tripwire(), poses, projection, eye);
                 }
-                mc.particleEngine.render(mc.gameRenderer.lightTexture(), LENS, partialTick, frustum, type -> true);
+                mc.particleEngine.render(mc.gameRenderer.lightTexture(), LENS, partialTick);
                 if (mc.options.getCloudsType() != CloudStatus.OFF) {
                     mc.levelRenderer.renderClouds(poses, poses.last().pose(), projection, partialTick, eye.x, eye.y, eye.z);
                 }
@@ -379,7 +381,7 @@ public class LiveCameraRenderer {
             }
         }
         for (BlockEntity tile : tiles) {
-            if (tile.getBlockPos().distToCenterSqr(eye) <= radius * radius && frustum.isVisible(mc.getBlockEntityRenderDispatcher().getRenderer(tile).getRenderBoundingBox(tile))) {
+            if (tile.getBlockPos().distToCenterSqr(eye) <= radius * radius && frustum.isVisible(tile instanceof GenericTileEntity generic ? generic.getRenderBoundingBox() : new AABB(tile.getBlockPos()))) {
                 poses.pushPose();
                 poses.translate(tile.getBlockPos().getX() - eye.x, tile.getBlockPos().getY() - eye.y, tile.getBlockPos().getZ() - eye.z);
                 mc.getBlockEntityRenderDispatcher().render(tile, partialTick, poses, BUFFERS);

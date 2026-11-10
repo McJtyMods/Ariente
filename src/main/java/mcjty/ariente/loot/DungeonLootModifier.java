@@ -1,42 +1,33 @@
 package mcjty.ariente.loot;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.List;
+import java.util.Set;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.config.WorldgenConfiguration;
 import mcjty.ariente.items.BlueprintItem;
 import mcjty.ariente.recipes.BlueprintRecipeRegistry;
 import mcjty.ariente.recipes.ConstructorRecipe;
 import mcjty.ariente.setup.Registration;
+import mcjty.lib.varia.LootGeneratedEvent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
-import net.neoforged.neoforge.common.loot.LootModifier;
 
-public class DungeonLootModifier extends LootModifier {
+public final class DungeonLootModifier {
 
-    public static final MapCodec<DungeonLootModifier> CODEC = RecordCodecBuilder.mapCodec(instance -> codecStart(instance)
-            .and(Codec.BOOL.optionalFieldOf("standalone_only", false).forGetter(modifier -> modifier.standaloneOnly))
-            .apply(instance, DungeonLootModifier::new));
-
-    private final boolean standaloneOnly;
-
-    public DungeonLootModifier(LootItemCondition[] conditions) {
-        this(conditions, false);
+    private DungeonLootModifier() {
     }
 
-    public DungeonLootModifier(LootItemCondition[] conditions, boolean standaloneOnly) {
-        super(conditions);
-        this.standaloneOnly = standaloneOnly;
+    public static void register() {
+        LootGeneratedEvent.EVENT.register((id, context, drops) -> {
+            String table = id.toString();
+            if (Set.of("minecraft:chests/abandoned_mineshaft", "minecraft:chests/igloo_chest", "minecraft:chests/desert_pyramid", "minecraft:chests/jungle_temple", "minecraft:chests/nether_bridge", "minecraft:chests/simple_dungeon", "minecraft:chests/village/village_toolsmith").contains(table)) apply(drops, context, false);
+            if (Set.of("minecraft:chests/ancient_city", "minecraft:chests/buried_treasure", "minecraft:chests/pillager_outpost", "minecraft:chests/ruined_portal", "minecraft:chests/shipwreck_map", "minecraft:chests/shipwreck_supply", "minecraft:chests/shipwreck_treasure", "minecraft:chests/stronghold_corridor", "minecraft:chests/stronghold_crossing", "minecraft:chests/stronghold_library", "minecraft:chests/underwater_ruin_big", "minecraft:chests/underwater_ruin_small", "minecraft:chests/village/village_armorer", "minecraft:chests/village/village_butcher", "minecraft:chests/village/village_cartographer", "minecraft:chests/village/village_desert_house", "minecraft:chests/village/village_fisher", "minecraft:chests/village/village_fletcher", "minecraft:chests/village/village_mason", "minecraft:chests/village/village_plains_house", "minecraft:chests/village/village_savanna_house", "minecraft:chests/village/village_shepherd", "minecraft:chests/village/village_snowy_house", "minecraft:chests/village/village_taiga_house", "minecraft:chests/village/village_tannery", "minecraft:chests/village/village_temple", "minecraft:chests/village/village_weaponsmith", "minecraft:chests/woodland_mansion").contains(table)) apply(drops, context, true);
+        });
     }
 
-    @Override
-    protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> loot, LootContext context) {
+    public static List<ItemStack> apply(List<ItemStack> loot, LootContext context, boolean standaloneOnly) {
         // Server config is read when loot is rolled, never while tables are parsed.
         if (!WorldgenConfiguration.doDungeonLoot() || standaloneOnly && Ariente.setup.arienteWorld) {
             return loot;
@@ -63,8 +54,4 @@ public class DungeonLootModifier extends LootModifier {
         return loot;
     }
 
-    @Override
-    public MapCodec<? extends IGlobalLootModifier> codec() {
-        return CODEC;
-    }
 }

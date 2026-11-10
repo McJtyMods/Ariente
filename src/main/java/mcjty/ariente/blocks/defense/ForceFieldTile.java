@@ -1,9 +1,15 @@
 package mcjty.ariente.blocks.defense;
 
-import mcjty.ariente.api.*;
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.ariente.config.Config.SHIELD_PANEL_LIFE;
+import static mcjty.hologui.api.Icons.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
+
 import java.util.*;
 import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
+import mcjty.ariente.api.*;
 import mcjty.ariente.blocks.ExtremeMachineTile;
 import mcjty.ariente.compat.arienteworld.ArienteWorldCompat;
 import mcjty.ariente.config.Config;
@@ -11,6 +17,7 @@ import mcjty.ariente.config.DamageConfiguration;
 import mcjty.ariente.config.PowerConfiguration;
 import mcjty.ariente.gui.GuiHelp;
 import mcjty.ariente.items.KeyCardItem;
+import mcjty.ariente.network.Packets;
 import mcjty.ariente.power.IPowerReceiver;
 import mcjty.ariente.power.IPowerUser;
 import mcjty.ariente.power.PowerReceiverSupport;
@@ -41,13 +48,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
-
-import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
-import static mcjty.ariente.config.Config.SHIELD_PANEL_LIFE;
-import static mcjty.hologui.api.Icons.*;
-import static mcjty.lib.builder.TooltipBuilder.header;
-import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISoundProducer, IPowerReceiver, ICityEquipment, IAlarmMode, IForceFieldTile, IPowerUser {
 
@@ -281,7 +281,7 @@ public class ForceFieldTile extends ExtremeMachineTile implements IGuiTile, ISou
                                     }
                                 }
 
-                                PacketDistributor.sendToPlayersInDimension((ServerLevel) level,
+                                Packets.sendToPlayersInDimension((ServerLevel) level,
                                         new PacketDamageForcefield(worldPosition, info.getIndex(), intersection));
                             }
                             changed = true;

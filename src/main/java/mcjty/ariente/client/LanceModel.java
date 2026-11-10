@@ -6,6 +6,9 @@ import javax.annotation.Nullable;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.items.EnergyLanceItem;
 import mcjty.ariente.items.LanceAim;
+import mcjty.lib.client.BakedModelWrapper;
+import mcjty.lib.client.ModelTools;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -18,17 +21,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class LanceModel extends BakedModelWrapper<BakedModel> {
 
     private final LivingEntity holder;
@@ -38,10 +33,10 @@ public class LanceModel extends BakedModelWrapper<BakedModel> {
         this.holder = holder;
     }
 
-    @SubscribeEvent
-    public static void bake(ModelEvent.ModifyBakingResult event) {
-        event.getModels().computeIfPresent(new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "energy_lance"), "inventory"),
-                (location, model) -> new LanceModel(model, null));
+    public static void register() {
+        ModelTools.registerModelBakeEvent(models -> models.computeIfPresent(new ModelResourceLocation(ResourceLocation.fromNamespaceAndPath(Ariente.MODID, "energy_lance"), "inventory"),
+                (location, model) -> new LanceModel(model, null)));
+        WorldFrame.register();
     }
 
     @Override
@@ -63,7 +58,7 @@ public class LanceModel extends BakedModelWrapper<BakedModel> {
         boolean thirdPerson = context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND || context == ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
         if (holder == null || !EnergyLanceItem.canFire(holder) || WorldFrame.worldToClip == null
                 || !(firstPerson || thirdPerson && WorldFrame.renderingEntities)) {
-            return originalModel.applyTransform(context, poses, leftHand);
+            return super.applyTransform(context, poses, leftHand);
         }
 
         float partialTick = WorldFrame.partialTick;
@@ -94,7 +89,6 @@ public class LanceModel extends BakedModelWrapper<BakedModel> {
         return originalModel;
     }
 
-    @EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
     public static class WorldFrame {
 
         private static Matrix4f worldToClip;
@@ -102,23 +96,20 @@ public class LanceModel extends BakedModelWrapper<BakedModel> {
         private static float partialTick;
         private static boolean renderingEntities;
 
-        @SubscribeEvent(priority = EventPriority.HIGHEST)
-        public static void renderStage(RenderLevelStageEvent event) {
-            if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+        public static void register() {
+            WorldRenderEvents.BEFORE_ENTITIES.register(event -> {
                 // Sky renderers can replace RenderSystem's projection; the event retains the world projection.
-                worldToClip = new Matrix4f(event.getProjectionMatrix()).mul(RenderSystem.getModelViewMatrix())
-                        .mul(event.getPoseStack().last().pose());
+                worldToClip = new Matrix4f(event.projectionMatrix()).mul(event.positionMatrix());
                 if (!worldToClip.isFinite()) {
                     worldToClip = null;
                     renderingEntities = false;
                     return;
                 }
-                camera = event.getCamera().getPosition();
-                partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
+                camera = event.camera().getPosition();
+                partialTick = event.tickCounter().getGameTimeDeltaPartialTick(false);
                 renderingEntities = true;
-            } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
-                renderingEntities = false;
-            }
+            });
+            WorldRenderEvents.AFTER_ENTITIES.register(event -> renderingEntities = false);
         }
     }
 }

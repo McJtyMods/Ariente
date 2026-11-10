@@ -2,9 +2,6 @@ package mcjty.ariente.items.armor;
 
 import java.util.EnumMap;
 import java.util.Map;
-import mcjty.ariente.api.ArmorUpgradeType;
-import mcjty.ariente.blocks.defense.ForceFieldRenderer;
-import mcjty.ariente.items.modules.ModuleSupport;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -15,8 +12,6 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 /** Original 64x128 suit geometry, attached to the modern humanoid animation bones. */
 public class PowerSuitModel extends HumanoidModel<LivingEntity> {
@@ -24,19 +19,9 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
     private static final Map<EquipmentSlot, PowerSuitModel> MODELS = new EnumMap<>(EquipmentSlot.class);
     private static final CubeDeformation INFLATION = new CubeDeformation(.01f);
 
-    public static final IClientItemExtensions EXTENSIONS = new IClientItemExtensions() {
-
-        @Override
-        public HumanoidModel<?> getHumanoidArmorModel(LivingEntity entity, ItemStack stack, EquipmentSlot slot, HumanoidModel<?> original) {
-            if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) {
-                return original;
-            }
-            if (slot == EquipmentSlot.CHEST && ModuleSupport.hasWorkingUpgrade(stack, ArmorUpgradeType.FORCEFIELD)) {
-                ForceFieldRenderer.personalForcefields.add(entity);
-            }
-            return MODELS.computeIfAbsent(slot, piece -> new PowerSuitModel(createLayer(piece).bakeRoot()));
-        }
-    };
+    public static PowerSuitModel forSlot(EquipmentSlot slot) {
+        return MODELS.computeIfAbsent(slot, key -> new PowerSuitModel(createLayer(key).bakeRoot()));
+    }
 
     public PowerSuitModel(ModelPart root) {
         super(root);
@@ -88,6 +73,7 @@ public class PowerSuitModel extends HumanoidModel<LivingEntity> {
                 rightLeg.addOrReplaceChild("boot", CubeListBuilder.create().texOffs(0, 77)
                         .addBox(-2.95f, 6, -2.5f, 5, 6, 5, INFLATION), PartPose.ZERO);
             }
+
             default -> throw new IllegalArgumentException("Not an armor slot: " + slot);
         }
         return LayerDefinition.create(mesh, 64, 128);

@@ -1,53 +1,26 @@
 package mcjty.ariente;
 
-import net.neoforged.neoforge.client.event.*;
 import mcjty.ariente.api.ArmorUpgradeType;
-import mcjty.ariente.blocks.defense.ForceFieldRenderer;
 import mcjty.ariente.config.UtilityConfiguration;
-import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.items.modules.ModuleSupport;
 import mcjty.ariente.network.PacketHitForcefield;
 import mcjty.ariente.setup.Registration;
-import mcjty.ariente.sounds.FluxLevitatorSounds;
+import mcjty.lib.network.ClientNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.event.entity.EntityMountEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 public class ClientForgeEventHandlers {
 
-    @SubscribeEvent
-    public void onRenderWorldEvent(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
-            ForceFieldRenderer.renderForceFields(event.getPoseStack(), event.getPartialTick().getGameTimeDeltaPartialTick(false));
-        }
-    }
-
-    @SubscribeEvent
-    public void onEntityMount(EntityMountEvent event) {
-        if (event.isMounting() && event.getLevel().isClientSide && event.getEntityBeingMounted() instanceof FluxLevitatorEntity) {
-            FluxLevitatorEntity levitator = (FluxLevitatorEntity) event.getEntityBeingMounted();
-            if (event.getEntityMounting() instanceof Player) {
-                FluxLevitatorSounds.playMovingSoundClientInside((Player) event.getEntityMounting(), levitator);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty empty) {
+    public void onLeftClickEmpty() {
         // This event is only called clientside. Tell the server
-        PacketDistributor.sendToServer(new PacketHitForcefield());
+        ClientNetworking.sendToServer(new PacketHitForcefield());
     }
 
-    @SubscribeEvent
-    public void onClientTick(ClientTickEvent.Pre event) {
+    public void onClientTick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.isPaused() || mc.player == null) {
             return;

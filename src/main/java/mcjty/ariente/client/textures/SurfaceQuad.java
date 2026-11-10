@@ -152,7 +152,7 @@ public class SurfaceQuad {
             data[i * stride + 4] = Float.floatToRawIntBits(sprite.getU(su));
             data[i * stride + 5] = Float.floatToRawIntBits(sprite.getV(sv));
         }
-        return withLight(new BakedQuad(data, original.getTintIndex(), original.getDirection(), sprite, original.isShade(), original.hasAmbientOcclusion()), light);
+        return withLight(new BakedQuad(data, original.getTintIndex(), original.getDirection(), sprite, original.isShade()), light);
     }
 
     public static BakedQuad retexture(BakedQuad original, ResourceLocation texture) {
@@ -166,7 +166,7 @@ public class SurfaceQuad {
             vertices[i * stride + 4] = Float.floatToRawIntBits(to.getU(u));
             vertices[i * stride + 5] = Float.floatToRawIntBits(to.getV(v));
         }
-        return new BakedQuad(vertices, original.getTintIndex(), original.getDirection(), to, original.isShade(), original.hasAmbientOcclusion());
+        return new BakedQuad(vertices, original.getTintIndex(), original.getDirection(), to, original.isShade());
     }
 
     private static BakedQuad withLight(BakedQuad original, int light) {
@@ -179,6 +179,6 @@ public class SurfaceQuad {
             int packed = data[i * stride + 6];
             data[i * stride + 6] = (packed & 0xffff0000) | Math.max(packed & 0xffff, light << 4);
         }
-        return new BakedQuad(data, original.getTintIndex(), original.getDirection(), original.getSprite(), false, false);
+        return new BakedQuad(data, original.getTintIndex(), original.getDirection(), original.getSprite(), false);
     }
 }

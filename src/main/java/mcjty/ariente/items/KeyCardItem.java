@@ -1,5 +1,7 @@
 package mcjty.ariente.items;
 
+import static mcjty.lib.builder.TooltipBuilder.*;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -26,9 +28,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-import static mcjty.lib.builder.TooltipBuilder.*;
-
-public class KeyCardItem extends Item implements ITooltipSettings {
+public class KeyCardItem extends Item implements ITooltipSettings , EarlyUseItem {
 
     private final TooltipBuilder tooltipBuilder = new TooltipBuilder()
             .info(header(),

@@ -1,5 +1,10 @@
 package mcjty.ariente.items;
 
+
+import static mcjty.hologui.api.Icons.*;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.parameter;
+
 import java.util.List;
 import java.util.Locale;
 import mcjty.ariente.Ariente;
@@ -28,10 +33,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
-import static mcjty.hologui.api.Icons.*;
-import static mcjty.lib.builder.TooltipBuilder.header;
-import static mcjty.lib.builder.TooltipBuilder.parameter;
-
 public class EnergyHolderItem extends Item implements ITooltipSettings {
 
     public static final int MODE_MANUAL = 0;
@@ -50,8 +51,8 @@ public class EnergyHolderItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-        return oldStack.getItem() != newStack.getItem();
+    public boolean allowComponentsUpdateAnimation(Player player, InteractionHand hand, ItemStack oldStack, ItemStack newStack) {
+        return false;
     }
 
     @Override

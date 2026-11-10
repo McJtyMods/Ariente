@@ -1,6 +1,8 @@
 package mcjty.ariente.display;
 
 import java.util.UUID;
+import mcjty.ariente.network.Packets;
+import mcjty.lib.network.PayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -9,8 +11,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /** Drag positions stay local; only press, release, cancellation and infrequent keepalives are sent. */
 public record PacketDisplayGesture(BlockPos source, UUID module, UUID ticket, Action action, float yaw, float pitch, boolean dragged, boolean allowDrop) implements CustomPacketPayload {
@@ -38,7 +38,7 @@ public record PacketDisplayGesture(BlockPos source, UUID module, UUID ticket, Ac
         buffer.writeBoolean(allowDrop);
     }
 
-    public void handle(IPayloadContext context) {
+    public void handle(PayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
             if (player == null) {
@@ -65,7 +65,7 @@ public record PacketDisplayGesture(BlockPos source, UUID module, UUID ticket, Ac
     }
 
     private void reply(ServerPlayer player, DisplayGeometry.DragPosition moved) {
-        PacketDistributor.sendToPlayer(player, new PacketDisplayGestureResult(ticket, moved == null ? null : moved.target().getBlockPos(),
+        Packets.sendToPlayer(player, new PacketDisplayGestureResult(ticket, moved == null ? null : moved.target().getBlockPos(),
                         moved == null ? 0 : moved.x(), moved == null ? 0 : moved.y()));
     }
 

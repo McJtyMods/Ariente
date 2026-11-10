@@ -7,10 +7,10 @@ import mcjty.ariente.display.DisplayDataAssembly;
 import mcjty.ariente.display.DisplayDataCodec;
 import mcjty.ariente.display.PacketDisplayData;
 import mcjty.ariente.display.PacketRequestDisplayData;
+import mcjty.lib.network.ClientNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 public class DisplayDataReceiver {
 
@@ -76,7 +76,7 @@ public class DisplayDataReceiver {
             }
             int missing = base.requestReadings(mc.player);
             if (missing != 0) {
-                PacketDistributor.sendToServer(new PacketRequestDisplayData(base.getBlockPos(), base.layoutVersion(), missing));
+                ClientNetworking.sendToServer(new PacketRequestDisplayData(base.getBlockPos(), base.layoutVersion(), missing));
                 if (++requested == 4) {
                     break;
                 }

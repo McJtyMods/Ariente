@@ -1,14 +1,13 @@
 package mcjty.ariente.facade;
 
+import static mcjty.lib.builder.TooltipBuilder.*;
+
 import java.util.List;
-import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import mcjty.ariente.items.ItemData;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.Tools;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -30,9 +29,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-
-import static mcjty.lib.builder.TooltipBuilder.*;
 
 public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
 
@@ -52,22 +48,6 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
     public FacadeItemBlock(FacadeBlock block) {
         super(block, new Properties()
                 );
-    }
-
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            private FacadeRenderer renderer;
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (renderer == null) {
-                    Minecraft mc = Minecraft.getInstance();
-                    renderer = new FacadeRenderer(mc.getBlockEntityRenderDispatcher(), mc.getEntityModels());
-                }
-                return renderer;
-            }
-        });
     }
 
     @Override
@@ -121,7 +101,7 @@ public class FacadeItemBlock extends BlockItem implements ITooltipSettings {
                     if (!world.isClientSide) {
                         facadeSupport.setMimicBlock(getMimicBlock(itemstack));
                     }
-                    SoundType soundtype = world.getBlockState(pos).getBlock().getSoundType(world.getBlockState(pos), world, pos, player);
+                    SoundType soundtype = world.getBlockState(pos).getSoundType();
                     world.playSound(player, pos, soundtype.getPlaceSound(), SoundSource.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                     if (!world.isClientSide && !player.getAbilities().instabuild) {
                         itemstack.shrink(1);

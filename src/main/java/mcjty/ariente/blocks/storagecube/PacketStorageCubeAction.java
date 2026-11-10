@@ -1,13 +1,13 @@
 package mcjty.ariente.blocks.storagecube;
 
 import mcjty.hologui.gui.HoloGuiEntity;
+import mcjty.lib.network.PayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record PacketStorageCubeAction(BlockPos pos, int entityId, Action action, int source, int destination,
                                       int amount, long revision) implements CustomPacketPayload {
@@ -41,7 +41,7 @@ public record PacketStorageCubeAction(BlockPos pos, int entityId, Action action,
         buffer.writeVarLong(revision);
     }
 
-    public void handle(IPayloadContext context) {
+    public void handle(PayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
             if (player == null || !player.level().hasChunkAt(pos)

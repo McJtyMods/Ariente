@@ -1,22 +1,13 @@
 package mcjty.ariente.recipes;
 
-import mcjty.ariente.Ariente;
 import mcjty.ariente.items.ItemData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-@EventBusSubscriber(modid = Ariente.MODID)
 public class BlueprintExchangeEvents {
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void crafted(PlayerEvent.ItemCraftedEvent event) {
-        Player player = event.getEntity();
-        ItemStack crafted = event.getCrafting();
+    public static void crafted(Player player, ItemStack crafted) {
         CompoundTag data = BlueprintExchangeRecipe.previewData(crafted);
         if (player.level().isClientSide || data == null) {
             return;

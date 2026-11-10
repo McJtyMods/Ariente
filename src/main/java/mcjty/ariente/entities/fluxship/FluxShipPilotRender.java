@@ -4,38 +4,17 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import java.util.IdentityHashMap;
 import java.util.Map;
-import mcjty.ariente.Ariente;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderLivingEvent;
-import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 /** Seat the rendered pilot in the cabin without changing their camera or control direction. */
-@EventBusSubscriber(modid = Ariente.MODID, value = Dist.CLIENT)
 public class FluxShipPilotRender {
 
     private static final Map<LivingEntity, PilotPose> ACTIVE = new IdentityHashMap<>();
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void beforePlayer(RenderPlayerEvent.Pre event) {
-        beforePilot(event.getEntity(), event.getPartialTick(), event.getPoseStack());
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void beforeLiving(RenderLivingEvent.Pre<?, ?> event) {
-        if (!(event.getEntity() instanceof Player)) {
-            beforePilot(event.getEntity(), event.getPartialTick(), event.getPoseStack());
-        }
-    }
-
-    private static void beforePilot(LivingEntity player, float partialTick, PoseStack pose) {
+    public static void beforePilot(LivingEntity player, float partialTick, PoseStack pose) {
         if (!(player.getVehicle() instanceof FluxShipEntity ship)) {
             return;
         }
@@ -57,19 +36,7 @@ public class FluxShipPilotRender {
         player.xRotO = 0;
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void afterPlayer(RenderPlayerEvent.Post event) {
-        afterPilot(event.getEntity(), event.getPoseStack());
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void afterLiving(RenderLivingEvent.Post<?, ?> event) {
-        if (!(event.getEntity() instanceof Player)) {
-            afterPilot(event.getEntity(), event.getPoseStack());
-        }
-    }
-
-    private static void afterPilot(LivingEntity player, PoseStack pose) {
+    public static void afterPilot(LivingEntity player, PoseStack pose) {
         PilotPose original = ACTIVE.remove(player);
         if (original != null) {
             player.yBodyRot = original.body();

@@ -1,6 +1,21 @@
 {
   "variants": {
-    "": {
+    "facing=down": {
+      "model": "ariente:block/decorative/blacktech_panel"
+    },
+    "facing=east": {
+      "model": "ariente:block/decorative/blacktech_panel"
+    },
+    "facing=north": {
+      "model": "ariente:block/decorative/blacktech_panel"
+    },
+    "facing=south": {
+      "model": "ariente:block/decorative/blacktech_panel"
+    },
+    "facing=up": {
+      "model": "ariente:block/decorative/blacktech_panel"
+    },
+    "facing=west": {
       "model": "ariente:block/decorative/blacktech_panel"
     }
   }

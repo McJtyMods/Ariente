@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -28,7 +27,7 @@ public class BlueprintRenderer extends BlockEntityWithoutLevelRenderer {
         ItemRenderer renderer = mc.getItemRenderer();
         pose.pushPose();
         pose.translate(.5, .5, .5);
-        renderer.render(stack, ItemDisplayContext.GUI, false, pose, buffers, light, overlay, mc.getModelManager().getModel(ModelResourceLocation.standalone(BASE_MODEL)));
+        renderer.render(stack, ItemDisplayContext.GUI, false, pose, buffers, light, overlay, mc.getModelManager().getModel(BASE_MODEL));
         ItemStack destination = BlueprintItem.getDestination(stack);
         if (!destination.isEmpty() && !destination.is(Registration.BLUEPRINT.get())) {
             pose.translate(0, 0, .15);

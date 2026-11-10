@@ -6,12 +6,12 @@ import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.hologui.gui.HoloGuiRenderTools;
 import mcjty.hologui.gui.HoloGuiSounds;
 import mcjty.hologui.gui.components.AbstractHoloComponent;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 /** A compact, framed single or double arrow for an exact numeric adjustment. */
 public class StepButton extends AbstractHoloComponent<StepButton> {
@@ -26,7 +26,7 @@ public class StepButton extends AbstractHoloComponent<StepButton> {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void render(PoseStack poses, MultiBufferSource buffer, Player player, IHoloGuiEntity holo, double cursorX, double cursorY) {
         boolean hovered = isInside(cursorX, cursorY);
         HoloGuiRenderTools.renderControl(poses, buffer, x, y, w, h, hovered);
@@ -47,7 +47,7 @@ public class StepButton extends AbstractHoloComponent<StepButton> {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void hitClient(Player player, IHoloGuiEntity entity, double cursorX, double cursorY) {
         Entity owner = entity.getEntity();
         player.level().playSound(player, owner.getX(), owner.getY(), owner.getZ(), HoloGuiSounds.GUICLICK.get(), SoundSource.PLAYERS, 1, 1);

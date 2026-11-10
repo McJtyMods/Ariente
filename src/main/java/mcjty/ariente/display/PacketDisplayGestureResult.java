@@ -2,12 +2,12 @@ package mcjty.ariente.display;
 
 import java.util.UUID;
 import mcjty.ariente.display.client.DisplayModuleDrag;
+import mcjty.lib.network.PayloadContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record PacketDisplayGestureResult(UUID ticket, BlockPos target, int x, int y) implements CustomPacketPayload {
 
@@ -33,7 +33,7 @@ public record PacketDisplayGestureResult(UUID ticket, BlockPos target, int x, in
         buffer.writeVarInt(y);
     }
 
-    public void handle(IPayloadContext context) {
+    public void handle(PayloadContext context) {
         context.enqueueWork(() -> DisplayModuleDrag.complete(ticket, target, x, y));
     }
 }

@@ -1,5 +1,11 @@
 package mcjty.ariente.blocks.utility;
 
+import static mcjty.ariente.blocks.BlockProperties.WORKING;
+import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
+import static mcjty.lib.builder.TooltipBuilder.header;
+import static mcjty.lib.builder.TooltipBuilder.key;
+import static mcjty.lib.container.SlotDefinition.generic;
+
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
@@ -16,6 +22,12 @@ import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.container.ContainerFactory;
 import mcjty.lib.container.GenericItemHandler;
+import mcjty.lib.container.IItemHandler;
+import mcjty.lib.container.IndexedStorage;
+import mcjty.lib.varia.Lazy;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.StoragePreconditions;
+import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -36,14 +48,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.items.IItemHandler;
-
-import static mcjty.ariente.blocks.BlockProperties.WORKING;
-import static mcjty.ariente.compat.ArienteTOPDriver.DRIVER;
-import static mcjty.lib.builder.TooltipBuilder.header;
-import static mcjty.lib.builder.TooltipBuilder.key;
-import static mcjty.lib.container.SlotDefinition.generic;
 
 public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, IPowerUser {
 
@@ -252,7 +256,7 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
         return side == null ? items : sidedHandlers.computeIfAbsent(side, SidedHandler::new);
     }
 
-    private class SidedHandler implements IItemHandler {
+    private class SidedHandler implements IItemHandler, IndexedStorage<ItemVariant> {
 
         private final Direction side;
 
@@ -262,6 +266,48 @@ public class SmelterTile extends ExtremeMachineTile implements IPowerReceiver, I
 
         private boolean isOutput() {
             return side == Direction.DOWN || side == Registration.SMELTER.get().getFrontDirection(getBlockState()).getOpposite();
+        }
+
+        private int mapped(int index) {
+            if (index < 0 || index >= size()) throw new IndexOutOfBoundsException(index);
+            return isOutput() ? SLOT_OUTPUT : SLOT_INPUT;
+        }
+
+        @Override
+        public int size() {
+            return getSlots();
+        }
+
+        @Override
+        public ItemVariant getResource(int index) {
+            return items.getResource(mapped(index));
+        }
+
+        @Override
+        public long getAmountAsLong(int index) {
+            return items.getAmountAsLong(mapped(index));
+        }
+
+        @Override
+        public long getCapacityAsLong(int index, ItemVariant resource) {
+            return items.getCapacityAsLong(mapped(index), resource);
+        }
+
+        @Override
+        public boolean isValid(int index, ItemVariant resource) {
+            return !isOutput() && items.isValid(mapped(index), resource);
+        }
+
+        @Override
+        public long insert(int index, ItemVariant resource, long amount, TransactionContext transaction) {
+            StoragePreconditions.notBlankNotNegative(resource, amount);
+            return isValid(index, resource) ? items.insert(mapped(index), resource, amount, transaction) : 0;
+        }
+
+        @Override
+        public long extract(int index, ItemVariant resource, long amount, TransactionContext transaction) {
+            StoragePreconditions.notBlankNotNegative(resource, amount);
+            return isOutput() ? items.extract(mapped(index), resource, amount, transaction) : 0;
         }
 
         @Override

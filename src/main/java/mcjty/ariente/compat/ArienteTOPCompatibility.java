@@ -1,19 +1,17 @@
 package mcjty.ariente.compat;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
 import mcjty.ariente.entities.fluxship.FluxShipEntity;
 import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.gui.ModGuis;
 import mcjty.hologui.api.IHoloGuiEntity;
 import mcjty.lib.varia.Logging;
 import mcjty.theoneprobe.api.ITheOneProbe;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.fml.InterModComms;
-import net.neoforged.fml.ModList;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
 
 public final class ArienteTOPCompatibility {
 
@@ -23,9 +21,9 @@ public final class ArienteTOPCompatibility {
     }
 
     public static void register() {
-        if (!registered && ModList.get().isLoaded("theoneprobe")) {
+        if (!registered && FabricLoader.getInstance().isModLoaded("theoneprobe")) {
             registered = true;
-            InterModComms.sendTo("theoneprobe", "getTheOneProbe", GetTheOneProbe::new);
+
         }
     }
 

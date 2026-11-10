@@ -107,7 +107,7 @@ public class MultipartItemBlock extends BlockItem {
                 stack.shrink(1);
             }
         }
-        SoundType sound = state.getSoundType(level, pos, player);
+        SoundType sound = state.getSoundType();
         level.playSound(player, pos, sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1) / 2, sound.getPitch() * .8F);
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

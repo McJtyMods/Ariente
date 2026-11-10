@@ -7,9 +7,9 @@ import mcjty.ariente.entities.levitator.FluxLevitatorEntity;
 import mcjty.ariente.entities.levitator.PacketLevitatorInput;
 import mcjty.ariente.items.armor.PacketArmorHotkey;
 import mcjty.ariente.items.armor.PacketConfigureArmor;
+import mcjty.lib.network.ClientNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyBindings {
@@ -74,6 +74,6 @@ public class KeyBindings {
     }
 
     private static void toServer(CustomPacketPayload packet) {
-        PacketDistributor.sendToServer(packet);
+        ClientNetworking.sendToServer(packet);
     }
 }

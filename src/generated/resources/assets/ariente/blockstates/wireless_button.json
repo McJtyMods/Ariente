@@ -32,11 +32,11 @@
     },
     "facing=up,power=false": {
       "model": "ariente:block/machines/wireless_button_unlocked",
-      "x": -90
+      "x": 270
     },
     "facing=up,power=true": {
       "model": "ariente:block/machines/wireless_button_locked",
-      "x": -90
+      "x": 270
     },
     "facing=west,power=false": {
       "model": "ariente:block/machines/wireless_button_unlocked",

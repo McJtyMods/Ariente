@@ -1,7 +1,7 @@
 package mcjty.ariente.items;
 
+
 import java.util.List;
-import java.util.function.Consumer;
 import mcjty.ariente.api.ArmorUpgradeType;
 import mcjty.ariente.api.ISoldier;
 import mcjty.ariente.entities.LaserEntity;
@@ -10,7 +10,6 @@ import mcjty.ariente.items.modules.WeaponModuleSupport;
 import mcjty.lib.builder.TooltipBuilder;
 import mcjty.lib.tooltips.ITooltipSettings;
 import mcjty.lib.varia.Tools;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -24,7 +23,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 public class EnergyLanceItem extends Item implements ITooltipSettings {
 
@@ -77,7 +75,6 @@ public class EnergyLanceItem extends Item implements ITooltipSettings {
         return InteractionResultHolder.consume(stack);
     }
 
-    @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         return !player.getOffhandItem().isEmpty();
     }
@@ -94,18 +91,8 @@ public class EnergyLanceItem extends Item implements ITooltipSettings {
     }
 
     @Override
-    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+    public boolean allowComponentsUpdateAnimation(Player player, InteractionHand hand, ItemStack oldStack, ItemStack newStack) {
         return false;
     }
 
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-
-            @Override
-            public HumanoidModel.ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack stack) {
-                return hand == InteractionHand.MAIN_HAND && canFire(entity) ? HumanoidModel.ArmPose.CROSSBOW_HOLD : null;
-            }
-        });
-    }
 }

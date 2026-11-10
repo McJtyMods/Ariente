@@ -1,12 +1,12 @@
 package mcjty.ariente.network;
 
+import mcjty.lib.network.PayloadContext;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class PacketHitForcefield implements CustomPacketPayload {
 
@@ -27,7 +27,7 @@ public class PacketHitForcefield implements CustomPacketPayload {
     public PacketHitForcefield(RegistryFriendlyByteBuf buf) {
     }
 
-    public void handle(IPayloadContext ctx) {
+    public void handle(PayloadContext ctx) {
         ctx.enqueueWork(() -> {
             Player playerEntity = (ServerPlayer) ctx.player();
             // @todo

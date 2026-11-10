@@ -1,9 +1,9 @@
 package mcjty.ariente.blocks.utility.autofield;
 
 import javax.annotation.Nonnull;
+import mcjty.lib.container.IItemHandler;
 import mcjty.lib.varia.ItemStackList;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
 
 public class SimpleItemHandler implements IItemHandler {
 
