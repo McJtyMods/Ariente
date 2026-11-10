@@ -55,7 +55,7 @@ dependencies {
     hologui()
 }
 
-modpublisher(['the-one-probe', 'ariente-world', 'patchouli'], ['mcjtylib', 'hologui'], ['the-one-probe', 'ariente-world', 'patchouli'], ['mcjtylib', 'hologui'], [])
+modpublisher(['the-one-probe', 'ariente-world', 'patchouli'], ['fabric-api', 'forge-config-api-port', 'mcjtylib', 'hologui'], ['the-one-probe', 'ariente-world', 'patchouli'], ['fabric-api', 'forge-config-api-port', 'mcjtylib', 'hologui'], [])
 
 tasks.register('apiJar', Jar) {
     archiveClassifier = 'api'
