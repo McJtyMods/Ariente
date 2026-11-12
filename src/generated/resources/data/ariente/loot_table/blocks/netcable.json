@@ -1,0 +1,68 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "ariente:netcable",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "color": "negarite"
+              }
+            }
+          ],
+          "name": "ariente:netcable_negarite"
+        },
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "ariente:netcable",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "color": "posirite"
+              }
+            }
+          ],
+          "name": "ariente:netcable_posirite"
+        },
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "ariente:netcable",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "color": "combined"
+              }
+            }
+          ],
+          "name": "ariente:netcable_combined"
+        },
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "ariente:netcable",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "color": "data"
+              }
+            }
+          ],
+          "name": "ariente:netcable_data"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "ariente:blocks/netcable"
+}

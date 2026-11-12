@@ -2,16 +2,34 @@
   "type": "minecraft:block",
   "pools": [
     {
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
-          "functions": [
+          "conditions": [
             {
               "block": "ariente:pattern",
-              "function": "minecraft:copy_state",
-              "properties": [
-                "type"
-              ]
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "type": "dots"
+              }
+            }
+          ],
+          "name": "ariente:pattern_dots"
+        },
+        {
+          "type": "minecraft:item",
+          "conditions": [
+            {
+              "block": "ariente:pattern",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "type": "lines"
+              }
             }
           ],
           "name": "ariente:pattern_lines"
