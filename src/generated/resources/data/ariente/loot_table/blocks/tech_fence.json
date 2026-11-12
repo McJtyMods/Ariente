@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ariente:tech_fence"
+        }
+      ],
+      "name": "tech_fence",
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "ariente:blocks/tech_fence"
+}
