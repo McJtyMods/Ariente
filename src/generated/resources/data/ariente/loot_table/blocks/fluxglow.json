@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ariente:fluxglow"
+        }
+      ],
+      "name": "fluxglow",
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "ariente:blocks/fluxglow"
+}

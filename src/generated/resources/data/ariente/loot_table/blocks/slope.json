@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ariente:slope"
+        }
+      ],
+      "name": "slope",
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "ariente:blocks/slope"
+}

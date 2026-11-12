@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ariente:reinforced_marble"
+        }
+      ],
+      "name": "reinforced_marble",
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "ariente:blocks/reinforced_marble"
+}
