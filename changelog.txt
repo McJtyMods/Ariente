@@ -1,2 +1,7 @@
+1.20-1.0.1:
+- Fixed all cable and connector variants failing to drop their matching items when broken.
+- Fixed missing drops for flux beams, ramps, slopes, fences, reinforced marble, flux glow blocks, and flat lights.
+- Fixed pattern blocks dropping the wrong variant.
+
 1.20-1.0.0:
 - Ported Ariente to 1.20
