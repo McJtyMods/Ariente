@@ -30,6 +30,23 @@ public class LootTables extends BaseLootTableProvider implements LootTableSubPro
     }
 
     protected void addTables() {
+        addSimpleTable(Registration.BLUE_GLASS_FENCE.get());
+        addSimpleTable(Registration.REINFORCED_MARBLE.get());
+        addSimpleTable(Registration.FLUX_GLOW.get());
+        addSimpleTable(Registration.FLUX_BEAM.get());
+        addSimpleTable(Registration.FLUX_BEND_BEAM.get());
+        addSimpleTable(Registration.RAMP.get());
+        addSimpleTable(Registration.SLOPE.get());
+        addSimpleTable(Registration.GLASS_FENCE.get());
+        addSimpleTable(Registration.MARBLE_FENCE.get());
+        addSimpleTable(Registration.TECH_FENCE.get());
+        addSimpleTable(Registration.FLAT_LIGHT.get());
+
+        addLootTable(Registration.NETCABLE.get(), BlockLootUtility.cableTable(Registration.NETCABLE.get(),
+                Registration.NETCABLE_NEGARITE.get(), Registration.NETCABLE_POSIRITE.get(), Registration.NETCABLE_COMBINED.get(), Registration.NETCABLE_DATA.get()));
+        addLootTable(Registration.CONNECTOR.get(), BlockLootUtility.cableTable(Registration.CONNECTOR.get(),
+                Registration.CONNECTOR_NEGARITE.get(), Registration.CONNECTOR_POSIRITE.get(), Registration.CONNECTOR_COMBINED.get(), Registration.CONNECTOR_DATA.get()));
+
         addLootTable(Registration.ORE_LITHIUM.get(), BlockLootUtility.oreTable(provider, Registration.ORE_LITHIUM.get(), Registration.RAW_LITHIUM.get()));
         addLootTable(Registration.ORE_MANGANESE.get(), BlockLootUtility.oreTable(provider, Registration.ORE_MANGANESE.get(), Registration.RAW_MANGANESE.get()));
         addLootTable(Registration.ORE_PLATINUM.get(), BlockLootUtility.oreTable(provider, Registration.ORE_PLATINUM.get(), Registration.RAW_PLATINUM.get()));
@@ -101,7 +118,8 @@ public class LootTables extends BaseLootTableProvider implements LootTableSubPro
             addSimpleSlab(entry.get());
         }
 
-        addBlockStateTable(Registration.PATTERN.get(), PatternBlock.TYPE);
+        addLootTable(Registration.PATTERN.get(), BlockLootUtility.variantTable(Registration.PATTERN.get(), PatternBlock.TYPE,
+                type -> Registration.PATTERN_ITEMS.get(type).get()));
     }
 
     protected void addSimpleSlab(Block block) {

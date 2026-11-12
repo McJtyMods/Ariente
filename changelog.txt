@@ -1,3 +1,8 @@
+1.21.1-2.0.1-fabric:
+- Fixed all cable and connector variants failing to drop their matching items when broken.
+- Fixed missing drops for flux beams, ramps, slopes, fences, reinforced marble, flux glow blocks, and flat lights.
+- Fixed pattern blocks dropping the wrong variant.
+
 1.21.1-2.0.0-fabric
 - Ported to Minecraft 1.21.1 on Fabric.
 
