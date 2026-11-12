@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ariente:ramp"
+        }
+      ],
+      "name": "ramp",
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "ariente:blocks/ramp"
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ariente:marble_fence"
+        }
+      ],
+      "name": "marble_fence",
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "ariente:blocks/marble_fence"
+}

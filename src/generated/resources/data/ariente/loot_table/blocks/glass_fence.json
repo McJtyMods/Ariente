@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "ariente:glass_fence"
+        }
+      ],
+      "name": "glass_fence",
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "ariente:blocks/glass_fence"
+}
