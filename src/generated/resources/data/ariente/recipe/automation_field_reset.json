@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "ariente:automation_field"
+  ],
+  "result": {
+    "id": "ariente:automation_field"
+  }
+}

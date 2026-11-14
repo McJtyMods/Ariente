@@ -29,6 +29,16 @@ public final class DisplayRenderType {
     private static final OitPipelineSet CAMERA_IMAGE_OIT = imageOitPipeline("display_camera", true);
     private static final Function<Identifier, RenderType> CAMERAS = Util.memoize(texture -> image(texture, CAMERA_IMAGE));
     public static final RenderType CAMERA = image(TextureAtlas.LOCATION_BLOCKS, IMAGE);
+    private static final RenderPipeline MINIATURE_PIPELINE = RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
+            .withLocation(Identifier.fromNamespaceAndPath("ariente", "pipeline/warper_miniature"))
+            .withVertexShader("core/position_tex_color").withFragmentShader("core/position_tex_color")
+            .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR).withPrimitiveTopology(PrimitiveTopology.QUADS)
+            .withCull(false).withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true)).build();
+    public static final RenderType MINIATURE = RenderType.create("ariente_warper_miniature",
+            RenderSetup.builder(MINIATURE_PIPELINE).withTexture("Sampler0", TextureAtlas.LOCATION_BLOCKS)
+                    .sortOnUpload().createRenderSetup());
+
     public static final RenderType ALIEN_FONT = image(Identifier.fromNamespaceAndPath("ariente", "textures/effects/alientfont.png"), IMAGE);
     public static final RenderType SURFACE = RenderType.create("ariente_display", RenderSetup.builder(COLOR).setOitPipelines(RenderPipelines.OIT_DEBUG_QUADS).createRenderSetup());
 
@@ -86,6 +96,7 @@ public final class DisplayRenderType {
 
     public static void registerPipelines(RegisterRenderPipelinesEvent event) {
         event.registerPipeline(IMAGE);
+        event.registerPipeline(MINIATURE_PIPELINE);
         event.registerPipeline(CAMERA_IMAGE);
         event.registerPipeline(COLOR);
         event.registerPipeline(SCENE_SOLID);

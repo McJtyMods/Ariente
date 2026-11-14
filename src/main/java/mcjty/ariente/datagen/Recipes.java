@@ -45,6 +45,7 @@ public class Recipes extends BaseRecipeProvider {
     protected void buildRecipes() {
         RecipeOutput consumer = output;
         blueprintExchange(consumer);
+        resetDevices(consumer);
         build(consumer, ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, Registration.TABLET.get())
                         .define('I', Items.IRON_INGOT)
                         .define('P', Items.GLASS_PANE)
@@ -79,11 +80,7 @@ public class Recipes extends BaseRecipeProvider {
                         .define('m', Registration.TAG_MARBLE)
                         .unlockedBy("silver", has(Registration.INGOT_SILVER.get())),
                 "sgs", "QCQ", "mmm");
-        build(consumer, ShapedRecipeBuilder.shaped(items, RecipeCategory.MISC, Registration.ENHANCED_ENERGY_SABRE.get())
-                        .define('x', Registration.TAG_INGOT_LITHIUM)
-                        .define('M', Registration.ENERGY_SABRE.get())
-                        .unlockedBy("sabre", has(Registration.ENERGY_SABRE.get())),
-                "xxx", "xMx", "xxx");
+
 
         for (MarbleColor color : MarbleColor.VALUES) {
             build(consumer, Identifier.fromNamespaceAndPath(Ariente.MODID, "marble_" + color.getSerializedName() + "_dye"), ShapelessRecipeBuilder.shapeless(items, RecipeCategory.MISC, DecorativeBlockModule.MARBLE_ITEMS.get(color).get())
@@ -188,6 +185,36 @@ public class Recipes extends BaseRecipeProvider {
                         .define('M', DecorativeBlockModule.MARBLE_ITEMS.get(MarbleColor.BLACK).get())
                         .define('m', DecorativeBlockModule.MARBLE_ITEMS.get(MarbleColor.GRAY).get()),
                 "mMm", "MmM", "mMm");
+    }
+
+    private void resetDevices(RecipeOutput consumer) {
+        // Only devices whose drops retain block entity data need resetting.
+        // Cables, connectors, tanks and other simple drops already stack normally.
+        reset(consumer, Registration.AICORE.get(), Registration.FORCEFIELD.get(),
+                Registration.NEGARITE_GENERATOR.get(), Registration.POSIRITE_GENERATOR.get(),
+                Registration.POWER_COMBINER.get(), Registration.AUTOMATION_FIELD.get(),
+                Registration.FIELD_MARKER.get(), Registration.INPUT_ITEM_NODE.get(),
+                Registration.OUTPUT_ITEM_NODE.get(), Registration.ROUND_ROBIN_NODE.get(),
+                Registration.SENSOR_ITEM_NODE.get(), Registration.DOOR_MARKER.get(),
+                Registration.SIGNAL_TRANSMITTER.get(), Registration.SIGNAL_RECEIVER.get(),
+                Registration.WIRELESS_BUTTON.get(), Registration.WIRELESS_LOCK.get(),
+                Registration.AUTO_CONSTRUCTOR.get(), Registration.RECYCLER.get(),
+                Registration.BLUEPRINT_STORAGE.get(), Registration.ELEVATOR.get(),
+                Registration.LOCK.get(), Registration.STORAGE.get(), Registration.STORAGE_3X3.get(),
+                Registration.HOLO_STORAGE_1.get(), Registration.HOLO_STORAGE_2.get(), Registration.HOLO_STORAGE_3.get(),
+                Registration.SMELTER.get(), Registration.PURIFIER_START.get(), Registration.PURIFIER_FINISH.get(),
+                Registration.CHARGER.get(), Registration.WARPER.get());
+    }
+
+    private void reset(RecipeOutput consumer, ItemLike... devices) {
+        for (ItemLike device : devices) {
+            String name = BuiltInRegistries.ITEM.getKey(device.asItem()).getPath();
+            // A fresh vanilla result deliberately discards contents, upgrades and all saved settings.
+            ShapelessRecipeBuilder.shapeless(items, RecipeCategory.MISC, device)
+                    .requires(device)
+                    .unlockedBy("has_device", has(device))
+                    .save(consumer, "ariente:" + name + "_reset");
+        }
     }
 
     private void blueprintExchange(RecipeOutput consumer) {

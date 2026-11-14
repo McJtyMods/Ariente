@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "ariente:purifier_start"
+  ],
+  "result": {
+    "id": "ariente:purifier_start"
+  }
+}

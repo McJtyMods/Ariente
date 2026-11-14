@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "ariente:blueprint_storage"
+  ],
+  "result": {
+    "id": "ariente:blueprint_storage"
+  }
+}
