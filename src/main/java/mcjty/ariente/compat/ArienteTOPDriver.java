@@ -199,6 +199,14 @@ public class ArienteTOPDriver implements TOPDriver {
         public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, Player player, Level world, BlockState blockState, IProbeHitData data) {
             super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
             Tools.safeConsume(world.getBlockEntity(data.getPos()), (WarperTile te) -> {
+                if (!te.getWarperName().isBlank()) {
+                    probeInfo.text(CompoundText.createLabelInfo("Name: ", te.getWarperName()));
+                }
+                if (te.getDestination() != null) {
+                    probeInfo.text(CompoundText.createLabelInfo("Destination: ", te.getDestinationDescription()));
+                } else if (te.canDimensionWarp()) {
+                    probeInfo.text(CompoundText.createLabelInfo("Destination: ", te.getDimensionWarpTarget()));
+                }
                 int pct = te.getChargePercentage();
                 probeInfo.text(CompoundText.createLabelInfo( "Charged: ", pct + "%"));
             }, "Bad tile entity!");

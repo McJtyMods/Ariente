@@ -156,6 +156,7 @@ public class Items extends BaseItemModelProvider {
         itemHandheld(Registration.ENERGY_SABRE.get(), "item/weapons/energy_sabre");
         parentedItem(Registration.ENERGY_LANCE.get(), "item/weapons/energy_lance");
         itemHandheld(Registration.ENHANCED_ENERGY_SABRE.get(), "item/weapons/enhanced_energy_sabre");
+        itemGenerated(Registration.TELEPORTATION_CARD.get(), "item/tools/teleportation_card");
         itemGenerated(Registration.KEY_CARD.get(), "item/tools/key_card");
         getBuilder("facade").parent(new ModelFile.UncheckedModelFile("ariente:item/facade_base"));
         getBuilder("blueprint").parent(new ModelFile.UncheckedModelFile("minecraft:builtin/entity"));

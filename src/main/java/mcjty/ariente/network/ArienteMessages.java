@@ -1,6 +1,7 @@
 package mcjty.ariente.network;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.teleport.PacketWarperPreview;
 import mcjty.ariente.blocks.storagecube.PacketStorageCubeAction;
 import mcjty.ariente.blocks.storagecube.PacketStorageCubeData;
 import mcjty.ariente.display.PacketDisplayAction;
@@ -32,7 +33,7 @@ import java.util.Optional;
 
 public class ArienteMessages {
 
-    private static final String PROTOCOL_VERSION = "11";
+    private static final String PROTOCOL_VERSION = "12";
 
     public static SimpleChannel INSTANCE;
 
@@ -79,6 +80,8 @@ public class ArienteMessages {
                 PacketPersonalForcefield::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         net.registerMessage(id(), PacketLevitatorInput.class, PacketLevitatorInput::toBytes, PacketLevitatorInput::new,
                 PacketLevitatorInput::handle, Optional.of(NetworkDirection.PLAY_TO_SERVER));
+        net.registerMessage(id(), PacketWarperPreview.class, PacketWarperPreview::toBytes, PacketWarperPreview::new,
+                PacketWarperPreview::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
     private static int packetId = 0;

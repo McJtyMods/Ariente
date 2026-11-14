@@ -1,0 +1,56 @@
+// From McTech20: ./gradlew :Ariente:build :Ariente:runGameTestServer -Pariente_runs -I Ariente/tools/warper_tests.gradle
+// Companion check: add -Pariente_warper_world and use :ArienteWorld:runGameTestServer.
+// Client check: add -Pariente_warper_client and use :Ariente:runClient with a disposable WarperCheck save.
+gradle.afterProject { p ->
+    if (p.name == 'Ariente') {
+        p.sourceSets.gameTest.java.setIncludes(['mcjty/ariente/WarperTests.java',
+                'mcjty/ariente/CameraDisplayTests.java', 'mcjty/ariente/GuiRegressionTests.java',
+                'mcjty/ariente/client/WarperClientChecks.java'] +
+                (p.hasProperty('ariente_warper_world') ? ['mcjty/ariente/WarperWorldTests.java'] : []))
+        p.sourceSets.gameTest.resources.setIncludes(['data/ariente/structures/empty.nbt', 'data/ariente/structures/warper_test.nbt'])
+        def classes = p.layout.buildDirectory.dir('verification/warper-tests/test-classes')
+        p.tasks.named('compileGameTestJava').configure { destinationDirectory.set(classes) }
+        p.sourceSets.gameTest.output.classesDirs.setFrom(classes)
+        p.sourceSets.gameTest.output.resourcesDir = p.file('build/verification/warper-tests/test-resources')
+        p.tasks.named('processGameTestResources').configure {
+            destinationDir = p.file('build/verification/warper-tests/test-resources')
+        }
+        p.minecraft.runs.gameTestServer {
+            workingDirectory p.file('build/verification/warper-tests/server')
+        }
+        if (p.hasProperty('ariente_warper_client')) {
+            p.minecraft.runs.client {
+                workingDirectory p.file('build/verification/warper-tests/client')
+                mods.ariente.source(p.sourceSets.gameTest)
+                property 'ariente.warperClientCheck', 'true'
+                args '--quickPlaySingleplayer', 'WarperCheck', '--width', '1000', '--height', '800'
+            }
+            p.tasks.withType(JavaExec).configureEach {
+                if (name == 'runClient') dependsOn p.tasks.named('gameTestClasses')
+            }
+        }
+    }
+    if (p.name == 'ArienteWorld' && p.hasProperty('ariente_warper_world')) {
+        p.sourceSets.gameTest.java.setSrcDirs([])
+        p.sourceSets.gameTest.output.classesDirs.setFrom([])
+        p.minecraft.runs.gameTestServer {
+            workingDirectory p.file('build/verification/warper-compatibility/server')
+            property 'forge.enabledGameTestNamespaces', 'ariente'
+            mods.ariente.source(p.project(':Ariente').sourceSets.gameTest)
+        }
+        p.tasks.withType(JavaExec).configureEach {
+            if (name == 'runGameTestServer') dependsOn p.project(':Ariente').tasks.named('gameTestClasses')
+        }
+        if (p.hasProperty('ariente_warper_client')) {
+            p.minecraft.runs.client {
+                workingDirectory p.file('build/verification/warper-compatibility/client')
+                mods.ariente.source(p.project(':Ariente').sourceSets.gameTest)
+                property 'ariente.warperClientCheck', 'true'
+                args '--quickPlaySingleplayer', 'WarperCheck', '--width', '1000', '--height', '800'
+            }
+            p.tasks.withType(JavaExec).configureEach {
+                if (name == 'runClient') dependsOn p.project(':Ariente').tasks.named('gameTestClasses')
+            }
+        }
+    }
+}

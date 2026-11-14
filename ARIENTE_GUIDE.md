@@ -196,7 +196,7 @@ The Overworld entrance is a small underground room. By default, a chunk has a
 0.002 chance of being an entrance candidate. These rooms are separate from the
 large cities in the other dimension.
 
-Open the charged Warper's hologram and press **Warp**. Ariente arrival buildings
+Open the charged Warper's hologram and press **Warp to Ariente**. Ariente arrival buildings
 contain a return Warper that starts charged. Charge is currently an unlock
 threshold, not a per-trip fuel cost: normal travel does not decrement it.
 The server also checks the charge when Warp is pressed; an already open
@@ -204,9 +204,36 @@ hologram cannot bypass an entrance's current charge requirement.
 
 The return trip first tries the remembered entrance, provided its Warper and
 landing space remain usable. Otherwise it tries a valid Overworld respawn
-position and then world spawn. The Warper is a dimension-travel device, not a
-general menu for selecting arbitrary player-built teleport destinations.
-The remembered entrance survives reconnects, server restarts and death/respawn.
+position and then world spawn. This dimension-travel button remains available
+when a card destination is configured. The remembered entrance survives reconnects, server restarts and death/respawn.
+
+### Teleportation Cards and named Warpers
+
+The Constructor blueprint for a **Teleportation Card** uses four Ender Pearls,
+two Silver Ingots and one Circuit. Name a Warper in its hologram, then
+sneak-right-click it with the card to encode its address. Right-click the card
+to select from up to 64 destinations. The list shows names, coordinates and
+dimensions; selection refreshes the name and captures a static 32×32 3D preview.
+The list also refreshes names of already loaded Warpers when opened. The source
+Warper hologram and The One Probe show the destination name with its coordinates;
+TOP also shows the source Warper name.
+
+Right-click another Warper with the selected card to redirect it. Walk into the
+rotating miniature above its visible pad to travel. This also moves unmounted
+mobs and dropped items. Arrivals must leave the receiving pad before that pad
+can send them onward, avoiding loops. Destination Warpers and clear arrival space
+are checked on the server at travel time. A removed Warper invalidates travel;
+replacing it at the same coordinates restores existing card addresses.
+
+Setting a destination alone never starts a timer. After successful travel, the
+Warper clears its destination 600 ticks (30 seconds) after the last traveler.
+Every successful trip restarts that delay; failed trips do not. **Pin** prevents
+expiry and persists across restarts. **Unpin** uses the last travel time, clearing
+immediately if the delay has elapsed. **Clear** removes the card destination.
+Card travel works in all dimensions, including without Ariente World; the
+original charged dimension travel buttons are available only with the companion
+dimension installed: **Warp to Ariente** in the Overworld and **Warp to Overworld**
+in Ariente.
 
 ### Terrain, resources, and cities
 

@@ -1,0 +1,167 @@
+package mcjty.ariente.items;
+
+import mcjty.ariente.Ariente;
+import mcjty.ariente.blocks.utility.WarperTile;
+import mcjty.ariente.teleport.TeleportationCardGui;
+import mcjty.ariente.teleport.WarperDestination;
+import mcjty.ariente.teleport.WarperPreviews;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.UUID;
+
+public class TeleportationCardItem extends Item {
+
+    public static final int MAX_DESTINATIONS = 64;
+
+    public TeleportationCardItem() {
+        super(new Properties().stacksTo(1));
+    }
+
+    public static ListTag destinations(ItemStack stack) {
+        return stack.hasTag() ? stack.getTag().getList("Destinations", Tag.TAG_COMPOUND) : new ListTag();
+    }
+
+    public static int selectedIndex(ItemStack stack) {
+        return stack.hasTag() && stack.getTag().contains("Selected") ? stack.getTag().getInt("Selected") : -1;
+    }
+
+    @Nullable
+    public static WarperDestination selected(ItemStack stack) {
+        return destination(stack, selectedIndex(stack));
+    }
+
+    @Nullable
+    public static WarperDestination destination(ItemStack stack, int index) {
+        ListTag list = destinations(stack);
+        return index >= 0 && index < Math.min(MAX_DESTINATIONS, list.size()) ? WarperDestination.load(list.getCompound(index)) : null;
+    }
+
+    @Nullable
+    public static UUID id(ItemStack stack) {
+        return stack.hasTag() && stack.getTag().hasUUID("CardId") ? stack.getTag().getUUID("CardId") : null;
+    }
+
+    public static void ensureId(ItemStack stack) {
+        if (id(stack) == null) {
+            stack.getOrCreateTag().putUUID("CardId", UUID.randomUUID());
+        }
+    }
+
+    public static String destinationName(ItemStack stack, int index) {
+        WarperDestination destination = destination(stack, index);
+        if (destination == null) {
+            return "";
+        }
+        String name = destinations(stack).getCompound(index).getString("Name");
+        return name.isBlank() ? destination.coordinates() : name;
+    }
+
+    public static void refreshName(ItemStack stack, int index, WarperTile warper) {
+        destinations(stack).getCompound(index).putString("Name", warper.getWarperName());
+    }
+
+    public static void sync(Player player) {
+        player.getInventory().setChanged();
+        player.inventoryMenu.broadcastChanges();
+        if (player.containerMenu != player.inventoryMenu) {
+            player.containerMenu.broadcastChanges();
+        }
+    }
+
+    public static boolean encode(ItemStack stack, WarperTile warper) {
+        ensureId(stack);
+        WarperDestination destination = new WarperDestination(warper.getLevel().dimension(), warper.getBlockPos());
+        ListTag list = destinations(stack);
+        for (int i = 0; i < Math.min(list.size(), MAX_DESTINATIONS); i++) {
+            if (destination.equals(destination(stack, i))) {
+                refreshName(stack, i, warper);
+                return true;
+            }
+        }
+        if (list.size() >= MAX_DESTINATIONS) {
+            return false;
+        }
+        CompoundTag entry = destination.save();
+        entry.putString("Name", warper.getWarperName());
+        list.add(entry);
+        stack.getOrCreateTag().put("Destinations", list);
+        return true;
+    }
+
+    @Override
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+        Player player = context.getPlayer();
+        if (player == null) {
+            return InteractionResult.PASS;
+        }
+        if (context.getLevel().getBlockEntity(context.getClickedPos()) instanceof WarperTile warper) {
+            if (!context.getLevel().isClientSide) {
+                if (player.isShiftKeyDown()) {
+                    boolean encoded = encode(stack, warper);
+                    player.displayClientMessage(Component.translatable(encoded ? "message.ariente.card.encoded" : "message.ariente.card.full"), true);
+                    sync(player);
+                } else if (selected(stack) != null) {
+                    if (!WarperPreviews.apply(player, stack, warper)) {
+                        player.displayClientMessage(Component.translatable("message.ariente.card.invalid"), true);
+                    }
+                } else {
+                    open(player, context.getHand());
+                }
+            }
+        } else {
+            open(player, context.getHand());
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        open(player, hand);
+        return InteractionResultHolder.sidedSuccess(player.getItemInHand(hand), level.isClientSide);
+    }
+
+    private static void open(Player player, InteractionHand hand) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            ItemStack stack = player.getItemInHand(hand);
+            ensureId(stack);
+            WarperPreviews.refreshLoadedNames(serverPlayer, stack);
+            sync(player);
+            Ariente.guiHandler.openHoloGui(player, TeleportationCardGui.guiId(hand), 1);
+            if (selected(stack) != null) {
+                WarperPreviews.select(serverPlayer, stack, selectedIndex(stack));
+            }
+        }
+    }
+
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return slotChanged || oldStack.getItem() != newStack.getItem();
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> lines, TooltipFlag flag) {
+        lines.add(Component.translatable("message.ariente.card.use").withStyle(ChatFormatting.AQUA));
+        lines.add(Component.translatable("message.ariente.card.encode").withStyle(ChatFormatting.GRAY));
+        lines.add(Component.translatable("message.ariente.card.apply").withStyle(ChatFormatting.GRAY));
+        lines.add(Component.translatable("message.ariente.card.count", destinations(stack).size(), MAX_DESTINATIONS));
+        if (selected(stack) != null) {
+            lines.add(Component.translatable("message.ariente.card.selected", destinationName(stack, selectedIndex(stack))).withStyle(ChatFormatting.GREEN));
+        }
+    }
+}

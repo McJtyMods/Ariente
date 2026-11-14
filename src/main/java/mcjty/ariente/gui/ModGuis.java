@@ -1,6 +1,7 @@
 package mcjty.ariente.gui;
 
 import mcjty.ariente.Ariente;
+import mcjty.ariente.teleport.TeleportationCardGui;
 import mcjty.ariente.display.ModuleSettings;
 import mcjty.ariente.entities.fluxelevator.FluxElevatorGui;
 import mcjty.ariente.entities.fluxship.FluxShipGui;
@@ -26,6 +27,7 @@ public class ModGuis {
 
     public static void init() {
         ModuleSettings.register();
+        TeleportationCardGui.register();
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR, ArmorGui::create);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_HELMET, ArmorGui::createHelmetGui);
         Ariente.guiHandler.getGuiRegistry().registerGui(GUI_ARMOR_CHEST, ArmorGui::createChestGui);

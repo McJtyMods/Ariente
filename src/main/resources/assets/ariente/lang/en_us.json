@@ -1,4 +1,13 @@
 {
+  "item.ariente.teleportation_card": "Teleportation Card",
+  "message.ariente.card.encoded": "Warper destination stored.",
+  "message.ariente.card.full": "This card already holds 64 destinations.",
+  "message.ariente.card.invalid": "Destination unavailable: the Warper must exist, and cannot target itself.",
+  "message.ariente.card.use": "Right click: select a destination",
+  "message.ariente.card.encode": "Sneak + right-click a Warper: add destination",
+  "message.ariente.card.apply": "Right-click a Warper: apply selected destination",
+  "message.ariente.card.count": "Destinations: %s / %s",
+  "message.ariente.card.selected": "Selected: %s",
   "block.ariente.pattern": "Patterned Marble",
   "block.ariente.multipart": "Ariente Panel",
   "entity.ariente.ariente_flux_elevator": "Flux Elevator",
@@ -323,7 +332,7 @@
   "message.ariente.posirite_tank.header": "Place one or more tanks on top of a Posirite Flux Generator",
   "message.ariente.negarite_generator.header": "This machine produces negarite flux when fed with negarite dust. This block needs negarite tanks above it to work",
   "message.ariente.posirite_generator.header": "This machine produces posirite flux when fed with posirite dust. This block needs posirite tanks above it to work",
-  "message.ariente.warper.header": "Warp to nearby warpers",
+  "message.ariente.warper.header": "Dimension travel and card destinations",
   "message.ariente.alarm.header": "City status",
   "message.ariente.lock.header": "Lock",
 
