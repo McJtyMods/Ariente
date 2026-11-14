@@ -1,0 +1,37 @@
+{
+  "name": "Warpers & Teleportation Cards",
+  "icon": "ariente:teleportation_card",
+  "category": "ariente:transport",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Build a Warper",
+      "text": "Make a Warper in the Constructor or Auto Constructor using a rare Warper blueprint: 8 Ender Pearls, 2 Advanced Circuits, 2 Flux Capacitors, 8 Silver Ingots, 4 Platinum Ingots, 4 Lithium Ingots, 8 Silicon Dust, 16 Negarite Dust and 16 Posirite Dust.$(br2)This produces one fresh Warper. Name and configure it with a Teleportation Card as described on the following pages."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Record destinations",
+      "text": "Make a Teleportation Card in the Constructor using its blueprint: 4 Ender Pearls, 2 Silver Ingots and 1 Circuit. There is no crafting-table recipe.$(br2)Name a Warper in its hologram, then sneak-right-click it with the card to record its name, coordinates and dimension. A card holds up to 64 destinations."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Choose and preview",
+      "text": "Right-click the card to open its hologram. Select a destination from the paged list to capture a rotating 3D preview of the surrounding 32 by 32 area, even in another dimension.$(br2)Selecting refreshes the name and checks the destination. A removed Warper cannot receive travelers. Replacing it at the same coordinates restores the address on existing cards."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Redirect a Warper",
+      "text": "Right-click a different Warper with the configured card. A smaller rotating preview appears above the pad; walk into it to teleport. Mobs and dropped items can also travel. Keep the arrival space clear.$(br2)Setting a destination never starts an expiry timer. After successful travel, it clears 30 seconds after the last teleport. Each successful teleport restarts that delay."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Pin, clear and name",
+      "text": "Right-click the Warper to name it, Clear its card destination, or Pin it permanently. Unpin restores expiry based on the last teleport, so an already elapsed delay clears it immediately.$(br2)With Ariente World installed, charged Overworld and Ariente Warpers keep their Warp to Ariente / Warp to Overworld buttons and return-trip behavior. Card destinations also work without Ariente World and in other dimensions."
+    }
+  ],
+  "extra_recipe_mappings": {
+    "ariente:teleportation_card": 1,
+    "ariente:warper": 0
+  }
+}

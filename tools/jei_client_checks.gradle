@@ -1,0 +1,46 @@
+// Run from Multi_fabric: :workspace:runClient -I ../Ariente_fabric/tools/jei_client_checks.gradle
+// Set -Pjei_test_directory=<disposable game directory> (prefer /var/tmp).
+// Supply -Pjei_test_world=<existing disposable world> the first time to copy its metadata.
+gradle.afterProject { p ->
+    if (p.name == 'Ariente') {
+        p.sourceSets.create('jeiClientTest') {
+            java.srcDir 'src/gameTest/java'
+            java.include 'mcjty/ariente/compat/jei/JeiClientChecks.java'
+            resources.srcDir 'src/gameTest/resources'
+            resources.include 'jei-client.fabric.mod.json'
+            compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
+            runtimeClasspath += p.sourceSets.main.output + p.sourceSets.main.runtimeClasspath
+        }
+        p.configurations.jeiClientTestImplementation.extendsFrom(p.configurations.implementation)
+        p.tasks.named('processJeiClientTestResources') {
+            rename 'jei-client.fabric.mod.json', 'fabric.mod.json'
+        }
+    }
+    if (p.name == 'workspace') {
+        def ariente = p.project(':Ariente')
+        p.loom.mods.register('ariente_jei_client_tests') { sourceSet ariente.sourceSets.jeiClientTest }
+        def directory = p.file(p.property('jei_test_directory'))
+        p.loom.runs.client {
+            runDir directory.absolutePath
+            programArgs '--quickPlaySingleplayer', 'JeiCheck', '--width', '640', '--height', '480'
+        }
+        p.tasks.named('runClient', JavaExec) {
+            dependsOn ariente.tasks.named('jeiClientTestClasses')
+            doFirst {
+                def world = new File(directory, 'saves/JeiCheck')
+                if (!new File(world, 'level.dat').isFile()) {
+                    def template = p.findProperty('jei_test_world') ? p.file(p.property('jei_test_world')) : null
+                    if (template == null || !new File(template, 'level.dat').isFile()) {
+                        throw new GradleException('Supply -Pjei_test_world=<existing disposable world> to initialize JeiCheck')
+                    }
+                    p.copy {
+                        from template
+                        into world
+                        exclude 'session.lock', 'region/**', 'entities/**', 'poi/**', 'dimensions/**', 'DIM-1/**', 'DIM1/**'
+                    }
+                }
+            }
+            classpath += ariente.sourceSets.jeiClientTest.output
+        }
+    }
+}

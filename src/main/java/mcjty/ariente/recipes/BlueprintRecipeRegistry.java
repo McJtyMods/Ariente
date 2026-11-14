@@ -132,6 +132,20 @@ public class BlueprintRecipeRegistry {
                 new ItemStack(Registration.DUST_NEGARITE.get(), 6),
                 new ItemStack(Registration.DUST_POSIRITE.get(), 6)
         ));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.TELEPORTATION_CARD.get()), COMMON,
+                new ItemStack(Registration.CIRCUIT.get(), 1),
+                new ItemStack(Registration.INGOT_SILVER.get(), 2),
+                new ItemStack(Items.ENDER_PEARL, 4)));
+        recipes.add(new ConstructorRecipe(new ItemStack(Registration.WARPER.get()), RARE,
+                new ItemStack(Registration.ADVANCED_CIRCUIT.get(), 2),
+                new ItemStack(Registration.FLUX_CAPACITOR.get(), 2),
+                new ItemStack(Items.ENDER_PEARL, 8),
+                new ItemStack(Registration.INGOT_SILVER.get(), 8),
+                new ItemStack(Registration.INGOT_PLATINUM.get(), 4),
+                new ItemStack(Registration.INGOT_LITHIUM.get(), 4),
+                new ItemStack(Registration.DUST_SILICON.get(), 8),
+                new ItemStack(Registration.DUST_NEGARITE.get(), 16),
+                new ItemStack(Registration.DUST_POSIRITE.get(), 16)));
         recipes.add(new ConstructorRecipe(new ItemStack(Registration.ENERGY_HOLDER.get()), COMMON,
                 new ItemStack(Registration.DUST_SILICON.get(), 1),
                 new ItemStack(Registration.DUST_NEGARITE.get(), 5),

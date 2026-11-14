@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_device": {
+      "conditions": {
+        "items": [
+          {
+            "items": "ariente:negarite_generator"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "ariente:negarite_generator_reset"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_device"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ariente:negarite_generator_reset"
+    ]
+  }
+}

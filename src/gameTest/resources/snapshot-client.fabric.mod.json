@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "ariente_snapshot_client_tests",
+  "version": "1",
+  "name": "Snapshot Model Client Checks",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "mcjty.ariente.display.client.SnapshotModelClientChecks"
+    ]
+  },
+  "depends": {
+    "ariente": "*",
+    "rftoolsbuilder": "*"
+  }
+}
