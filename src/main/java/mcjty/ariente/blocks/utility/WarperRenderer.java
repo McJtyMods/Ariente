@@ -1,5 +1,7 @@
 package mcjty.ariente.blocks.utility;
 
+import mcjty.ariente.display.client.CameraDisplayRenderer;
+import com.mojang.math.Axis;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcjty.ariente.Ariente;
@@ -38,6 +40,18 @@ public class WarperRenderer implements BlockEntityRenderer<WarperTile> {
 
     @Override
     public void render(WarperTile te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+        if (te.getDestination() != null) {
+            if (Minecraft.getInstance().gameRenderer.getMainCamera().getPosition().distanceToSqr(Vec3.atCenterOf(te.getBlockPos())) > 32 * 32) {
+                return;
+            }
+            matrixStack.pushPose();
+            // Keep the pad and its approach visible below a compact, walk-through hologram.
+            matrixStack.translate(.5, 2, .5);
+            matrixStack.mulPose(Axis.YP.rotationDegrees(((te.getLevel().getGameTime() % 720) + partialTicks) * .5f));
+            CameraDisplayRenderer.renderMiniature(matrixStack, buffer, te, te.getDestinationScene(), 1.6f, 210);
+            matrixStack.popPose();
+            return;
+        }
         ResourceLocation beamIcon = HALO;
 
         Minecraft mc = Minecraft.getInstance();

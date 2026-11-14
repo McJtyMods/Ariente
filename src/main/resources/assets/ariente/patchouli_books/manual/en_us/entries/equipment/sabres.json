@@ -15,9 +15,9 @@
       "text": "$(li)$(item)Power$(): doubles the weapon’s damage bonus; usage 30.$(li)$(item)Inhibit$(): strips beneficial effects and suppresses Master Soldier regeneration for 10 seconds; usage 30.$(li)$(item)Looting$(): grants Looting III; usage 20.$(li)$(item)Fire$(): grants Fire Aspect III; usage 30.$(br2)Energy Efficiency also fits: it raises this weapon’s module budget and reduces its fuel draw.$(br2)Sabres still use durability. Check it as well as the shared holder’s fuel."
     },
     {
-      "type": "patchouli:crafting",
-      "recipe": "ariente:enhanced_energy_sabre",
-      "text": "An Energy Sabre surrounded by Lithium Ingots can be upgraded at a crafting table. A blueprint is another route to the enhanced weapon."
+      "type": "patchouli:text",
+      "title": "Constructing the upgrade",
+      "text": "Use the matching Enhanced Energy Sabre blueprint in a Constructor or Auto Constructor. The blueprint is reusable.$(br2)Materials: Energy Sabre, Circuit, 3 Silicon, 5 Negarite Dust, 5 Posirite Dust, 3 Platinum Ingots and 2 Lithium Ingots."
     },
     {
       "type": "patchouli:text",

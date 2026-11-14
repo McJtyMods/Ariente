@@ -1,5 +1,7 @@
 package mcjty.ariente.display.client;
 
+import net.minecraft.client.renderer.MultiBufferSource;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -53,12 +55,14 @@ public class CameraDisplayRenderer {
 
     private static final int MAX_QUADS = 131072;
     private static final int MIN_VIEW_SPAN = 16;
+    private static final Map<Object, Miniature> MINIATURES = new WeakHashMap<>();
     private static final Map<InstalledModule, Mesh> CACHE = new WeakHashMap<>();
     private static final Comparator<Face> DEPTH_ORDER = Comparator.comparingDouble(face -> face.depth);
     private static final ByteBufferBuilder PERSPECTIVE_MEMORY = new ByteBufferBuilder(262144);
 
     public static void clearCache() {
         CACHE.clear();
+        MINIATURES.clear();
         CameraPerspectiveRenderer.clear();
         LiveCameraRenderer.clear();
     }
@@ -171,8 +175,11 @@ public class CameraDisplayRenderer {
     }
 
     private static Mesh build(InstalledModule module, double startedAt) {
+        return build(module.snapshot(), module.snapshotVersion(), startedAt);
+    }
+
+    private static Mesh build(CompoundTag data, int version, double startedAt) {
         Minecraft mc = Minecraft.getInstance();
-        CompoundTag data = module.snapshot();
         ListTag paletteTag = data.getList("Palette", Tag.TAG_COMPOUND);
         List<BlockState> palette = new ArrayList<>();
         for (int i = 0; i < Math.min(CameraCapture.MAX_BLOCKS, paletteTag.size()); i++) {
@@ -275,7 +282,38 @@ public class CameraDisplayRenderer {
             box(faces, x - .2, y - .4, z - .2, x + .2, y + .4, z + .2, white, entity.getInt("Color"), false);
         }
         box(faces, -.15, -.15, -.15, .15, .15, .15, white, 0x77ffff, false);
-        return new Mesh(module.snapshotVersion(), faces, startedAt);
+        return new Mesh(version, faces, startedAt);
+    }
+
+    /** Reuse baked camera surfaces in actual 3D, with depth testing and a stable pivot. */
+    public static void renderMiniature(PoseStack poses, MultiBufferSource buffer, Object owner, CompoundTag data, float diameter, int alpha) {
+        if (Minecraft.getInstance().level == null) {
+            return;
+        }
+        Miniature miniature = MINIATURES.get(owner);
+        if (miniature == null || miniature.data != data) {
+            miniature = new Miniature(data, build(data, 0, 0));
+            MINIATURES.put(owner, miniature);
+        }
+        Mesh mesh = miniature.mesh;
+        poses.pushPose();
+        float scale = diameter / (2 * mesh.radius);
+        poses.scale(scale, scale, scale);
+        poses.translate(-mesh.center.x, -mesh.center.y, -mesh.center.z);
+        Matrix4f pose = poses.last().pose();
+        VertexConsumer vertices = buffer.getBuffer(DisplayRenderType.MINIATURE);
+        for (Face face : mesh.faces) {
+            for (int i = 0; i < 4; i++) {
+                Point p = face.points[i];
+                int rgb = face.colors[i];
+                vertices.addVertex(pose, p.x(), p.y(), p.z()).setUv(p.u(), p.v())
+                        .setColor(rgb >> 16 & 255, rgb >> 8 & 255, rgb & 255, alpha);
+            }
+        }
+        poses.popPose();
+    }
+
+    private record Miniature(CompoundTag data, Mesh mesh) {
     }
 
     private static void box(List<Face> faces, double x0, double y0, double z0, double x1, double y1, double z1,

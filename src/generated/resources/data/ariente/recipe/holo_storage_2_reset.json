@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ariente:holo_storage_2"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "ariente:holo_storage_2"
+  }
+}

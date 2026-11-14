@@ -80,3 +80,46 @@ The workspace uses the included McJtyLib and The One Probe sources. Ariente and 
 Unpublished port dependencies can be provided with `-Pariente_dependency_repository=<repository URL>`; `-Pgradletools_path=<file>` selects an explicit shared Gradle script.
 
 The [NeoForge port checkpoint](../ArienteWorld/PORT_1_21.md) documents current commands and validation. Earlier Forge fixture commands in this file are historical.
+
+## Warper destinations
+
+Warpers can be made with a rare Constructor blueprint; see the
+[Warper material list](ARIENTE_GUIDE.md#teleportation-cards-and-named-warpers).
+
+Teleportation Cards are Constructor blueprint recipes: four Ender Pearls, two
+Silver Ingots and one Circuit. Name a Warper in its hologram, then sneak-right-click
+it with the card to save its address. Right-click the card to choose among up to
+64 destinations, with names, coordinates, dimensions and a captured 32×32 preview.
+Selecting refreshes the destination name; opening the card also refreshes names
+of Warpers already loaded on the server. The source Warper hologram and The One
+Probe show the destination name with its coordinates; TOP also shows the source
+Warper name. Destination names are cached for unloaded targets.
+
+Apply the selected address by right-clicking another Warper with the card, then
+step into its rotating miniature. Players, unmounted mobs and dropped items can
+travel within or across dimensions. Keep the arrival space clear. Arrivals remain
+exempt from that receiving pad until they leave, preventing reciprocal links from
+bouncing travelers back. A removed destination fails safely; replacing the Warper
+at the same coordinates restores the address without re-encoding the card.
+
+Configuration alone never starts expiry. Successful travel starts a 600-tick
+(30-second) delay, restarted by each later successful teleport. Pin disables expiry;
+unpin uses the last successful teleport, so an elapsed delay clears immediately.
+Clear restores the original behavior. With Ariente World installed, Overworld and
+Ariente pads retain the charged Warp to Ariente / Warp to Overworld buttons and
+existing return-trip data.
+
+The preview reuses camera block geometry, captured once per selection rather than
+streaming a remote world. It shows connected surfaces in a 32×32 footprint, from
+four blocks below to 27 above the pad, with bounded palette/block counts. The card
+stores only addresses and names; terrain is sent separately and one selected
+snapshot is cached per player. Applying a card reuses that snapshot when available.
+Warpers persist their snapshot and settings. No remote chunks stay force-loaded.
+
+Run the recent port regressions from the workspace with
+`./gradlew :ArienteWorld:runGameTestServer -I Ariente/tools/recent_port_tests.gradle`.
+The disposable test worlds and reports live under `build/verification/`. The checks cover
+legacy saves and dimension travel, named card destinations, expiry/pinning, all 31
+reset recipes in inventory/table slots, Door Marker previews, and cube landing geometry.
+Add `-Precent_without_world` and run `:Ariente:runGameTestServer` to check Ariente
+without the companion mod in a separate disposable world.

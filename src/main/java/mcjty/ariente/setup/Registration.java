@@ -471,6 +471,7 @@ public class Registration {
     public static final Supplier<CircuitItem> CIRCUIT = ITEMS.register("circuit", () -> new CircuitItem(false));
     public static final Supplier<CircuitItem> ADVANCED_CIRCUIT = ITEMS.register("advanced_circuit", () -> new CircuitItem(true));
     public static final Supplier<ExtremeCircuitItem> EXTREME_CIRCUIT = ITEMS.register("extreme_circuit", ExtremeCircuitItem::new);
+    public static final Supplier<TeleportationCardItem> TELEPORTATION_CARD = ITEMS.register("teleportation_card", TeleportationCardItem::new);
     public static final Supplier<EnergyHolderItem> ENERGY_HOLDER = ITEMS.register("energy_holder", EnergyHolderItem::new);
     public static final Supplier<PowerSuit> POWERSUIT_HEAD = ITEMS.register("powersuit_head", () -> new PowerSuit(EquipmentSlot.HEAD));
     public static final Supplier<PowerSuit> POWERSUIT_CHEST = ITEMS.register("powersuit_chest", () -> new PowerSuit(EquipmentSlot.CHEST));
