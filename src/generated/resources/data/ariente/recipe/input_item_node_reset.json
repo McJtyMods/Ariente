@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "ariente:input_item_node"
+  ],
+  "result": {
+    "id": "ariente:input_item_node"
+  }
+}

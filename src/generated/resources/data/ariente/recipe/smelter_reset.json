@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "ariente:smelter"
+  ],
+  "result": {
+    "id": "ariente:smelter"
+  }
+}

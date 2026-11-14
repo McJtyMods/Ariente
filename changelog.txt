@@ -1,3 +1,10 @@
+26.2-4.0.2:
+- Add a rare Constructor blueprint recipe for Warpers.
+- Fix Door Marker pattern previews and selection highlights.
+- Enhanced Energy Sabres now require their Constructor blueprint; remove the crafting-table recycling exploit.
+- Add single-device crafting resets to clear stored contents, upgrades and settings for stacking.
+- Add named Warpers and Teleportation Cards, destination previews, step-on travel, Pin and Clear controls.
+
 26.2-4.0.1:
 - Fixed all cable and connector variants failing to drop their matching items when broken.
 - Fixed missing drops for flux beams, ramps, slopes, fences, reinforced marble, flux glow blocks, and flat lights.

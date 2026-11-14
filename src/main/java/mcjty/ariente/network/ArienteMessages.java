@@ -1,5 +1,6 @@
 package mcjty.ariente.network;
 
+import mcjty.ariente.teleport.PacketWarperPreview;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import javax.annotation.Nonnull;
 import mcjty.ariente.Ariente;
@@ -31,7 +32,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 public class ArienteMessages {
 
     public static void registerMessages(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("ariente").versioned("1");
+        PayloadRegistrar registrar = event.registrar("ariente").versioned("2");
         registrar.playToServer(PacketStorageCubeAction.TYPE, PacketStorageCubeAction.CODEC, PacketStorageCubeAction::handle);
         registrar.playToClient(PacketStorageCubeData.TYPE, PacketStorageCubeData.CODEC, PacketStorageCubeData::handle);
         registrar.playToServer(PacketDisplayAction.TYPE, PacketDisplayAction.CODEC, PacketDisplayAction::handle);
@@ -43,6 +44,7 @@ public class ArienteMessages {
         registrar.playToServer(PacketArmorHotkey.TYPE, PacketArmorHotkey.CODEC, PacketArmorHotkey::handle);
         registrar.playToServer(PacketShipAction.TYPE, PacketShipAction.CODEC, PacketShipAction::handle);
         registrar.playToServer(PacketAutoFieldRequestRenderInfo.TYPE, PacketAutoFieldRequestRenderInfo.CODEC, PacketAutoFieldRequestRenderInfo::handle);
+        registrar.playToClient(PacketWarperPreview.TYPE, PacketWarperPreview.CODEC, PacketWarperPreview::handle);
         registrar.playToClient(PacketDisplayData.TYPE, PacketDisplayData.CODEC, PacketDisplayData::handle);
         registrar.playToServer(PacketRequestDisplayData.TYPE, PacketRequestDisplayData.CODEC, PacketRequestDisplayData::handle);
         registrar.playToClient(PacketDamageForcefield.TYPE, PacketDamageForcefield.CODEC, PacketDamageForcefield::handle);

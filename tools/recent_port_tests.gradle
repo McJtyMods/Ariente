@@ -1,0 +1,19 @@
+// Run from the workspace: :ArienteWorld:runGameTestServer -I <Ariente>/tools/recent_port_tests.gradle
+// The companion run also loads Ariente's regression classes; all saves are disposable.
+gradle.afterProject { p ->
+    if (p.name in ['Ariente', 'ArienteWorld']) {
+        def ariente = p.name == 'Ariente'
+        p.sourceSets.gameTest.java.setIncludes(ariente ? (['mcjty/ariente/DeviceResetTests.java', 'mcjty/ariente/DoorMarkerTests.java', 'mcjty/ariente/WarperTests.java'] + (p.hasProperty('recent_without_world') ? [] : ['mcjty/ariente/WarperWorldTests.java'])) : ['mcjty/arienteworld/CubeLandingTests.java'])
+        p.sourceSets.gameTest.resources.setIncludes(ariente ? ['data/ariente/structure/empty.nbt', 'data/ariente/structure/warper_test.nbt'] : ['data/arienteworld/structure/empty.nbt', 'data/minecraft/worldgen/world_preset/*.json'])
+        def suite = p.hasProperty('recent_without_world') ? 'recent-without-world-tests' : 'recent-tests'
+        def output = p.layout.buildDirectory.dir("verification/${suite}/classes")
+        p.tasks.named('compileGameTestJava').configure { destinationDirectory.set(output) }
+        p.sourceSets.gameTest.output.classesDirs.setFrom(output)
+        p.runs {
+            gameTestServer {
+                workingDirectory p.file("build/verification/${suite}/server")
+                systemProperty 'neoforge.enabledGameTestNamespaces', 'ariente,arienteworld'
+            }
+        }
+    }
+}

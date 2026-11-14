@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "ariente:sensor_item_node"
+  ],
+  "result": {
+    "id": "ariente:sensor_item_node"
+  }
+}

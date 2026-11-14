@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "ariente:charger"
+  ],
+  "result": {
+    "id": "ariente:charger"
+  }
+}

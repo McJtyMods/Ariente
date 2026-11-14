@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "ariente:posirite_generator"
+  ],
+  "result": {
+    "id": "ariente:posirite_generator"
+  }
+}
