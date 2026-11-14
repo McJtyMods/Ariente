@@ -1,0 +1,47 @@
+// Run from Multi_fabric: :workspace:runClient -I ../Ariente_fabric/tools/snapshot_model_checks.gradle
+// Set -Psnapshot_test_directory=<disposable game directory> (prefer /var/tmp).
+// Supply -Psnapshot_test_world=<existing disposable world> the first time to copy its metadata.
+gradle.afterProject { p ->
+    if (p.name == 'Ariente') {
+        p.sourceSets.create('snapshotClientTest') {
+            java.srcDir 'src/gameTest/java'
+            java.include 'mcjty/ariente/display/client/SnapshotModelClientChecks.java'
+            resources.srcDir 'src/gameTest/resources'
+            resources.include 'snapshot-client.fabric.mod.json'
+            compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
+            runtimeClasspath += p.sourceSets.main.output + p.sourceSets.main.runtimeClasspath
+        }
+        p.configurations.snapshotClientTestImplementation.extendsFrom(p.configurations.implementation)
+        p.dependencies.add('snapshotClientTestImplementation', p.project(':RFToolsBuilder'))
+        p.tasks.named('processSnapshotClientTestResources') {
+            rename 'snapshot-client.fabric.mod.json', 'fabric.mod.json'
+        }
+    }
+    if (p.name == 'workspace') {
+        def ariente = p.project(':Ariente')
+        p.loom.mods.register('ariente_snapshot_client_tests') { sourceSet ariente.sourceSets.snapshotClientTest }
+        def directory = p.file(p.property('snapshot_test_directory'))
+        p.loom.runs.client {
+            runDir directory.absolutePath
+            programArgs '--quickPlaySingleplayer', 'SnapshotCheck', '--width', '640', '--height', '480'
+        }
+        p.tasks.named('runClient', JavaExec) {
+            dependsOn ariente.tasks.named('snapshotClientTestClasses')
+            doFirst {
+                def world = new File(directory, 'saves/SnapshotCheck')
+                if (!new File(world, 'level.dat').isFile()) {
+                    def template = p.findProperty('snapshot_test_world') ? p.file(p.property('snapshot_test_world')) : null
+                    if (template == null || !new File(template, 'level.dat').isFile()) {
+                        throw new GradleException('Supply -Psnapshot_test_world=<existing disposable world> to initialize SnapshotCheck')
+                    }
+                    p.copy {
+                        from template
+                        into world
+                        exclude 'session.lock', 'region/**', 'entities/**', 'poi/**', 'dimensions/**', 'DIM-1/**', 'DIM1/**'
+                    }
+                }
+            }
+            classpath += ariente.sourceSets.snapshotClientTest.output
+        }
+    }
+}

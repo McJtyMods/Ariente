@@ -1,5 +1,6 @@
 package mcjty.ariente.network;
 
+import mcjty.ariente.teleport.PacketWarperPreview;
 import mcjty.lib.network.PayloadContext;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import mcjty.ariente.blocks.storagecube.PacketStorageCubeData;
@@ -14,6 +15,7 @@ public final class ClientMessages {
     public static void register() {
         ClientPlayNetworking.registerGlobalReceiver(PacketStorageCubeData.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.client())));
         ClientPlayNetworking.registerGlobalReceiver(PacketDisplayGestureResult.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.client())));
+        ClientPlayNetworking.registerGlobalReceiver(PacketWarperPreview.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.client())));
         ClientPlayNetworking.registerGlobalReceiver(PacketDisplayData.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.client())));
         ClientPlayNetworking.registerGlobalReceiver(PacketDamageForcefield.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.client())));
         ClientPlayNetworking.registerGlobalReceiver(PacketAutoFieldReturnRenderInfo.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.client())));

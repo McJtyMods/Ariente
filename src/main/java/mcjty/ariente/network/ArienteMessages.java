@@ -1,5 +1,6 @@
 package mcjty.ariente.network;
 
+import mcjty.ariente.teleport.PacketWarperPreview;
 import mcjty.lib.network.PayloadContext;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -52,6 +53,7 @@ public class ArienteMessages {
         ServerPlayNetworking.registerGlobalReceiver(PacketShipAction.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
         PayloadTypeRegistry.serverboundPlay().register(PacketAutoFieldRequestRenderInfo.TYPE, PacketAutoFieldRequestRenderInfo.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(PacketAutoFieldRequestRenderInfo.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
+        PayloadTypeRegistry.clientboundPlay().register(PacketWarperPreview.TYPE, PacketWarperPreview.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(PacketDisplayData.TYPE, PacketDisplayData.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(PacketRequestDisplayData.TYPE, PacketRequestDisplayData.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(PacketRequestDisplayData.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));

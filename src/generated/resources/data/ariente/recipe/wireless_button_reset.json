@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "ariente:wireless_button"
+  ],
+  "result": {
+    "id": "ariente:wireless_button"
+  }
+}

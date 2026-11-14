@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "ariente:recycler"
+  ],
+  "result": {
+    "id": "ariente:recycler"
+  }
+}
