@@ -11,12 +11,15 @@ import mcjty.ariente.sounds.ModSounds;
 import mcjty.hologui.api.IGuiComponent;
 import mcjty.hologui.api.IGuiComponentRegistry;
 import mcjty.hologui.api.IGuiTile;
+import mcjty.hologui.api.IImage;
+import mcjty.hologui.api.components.IPanel;
 import mcjty.lib.blocks.BaseBlock;
 import mcjty.lib.blocks.RotationType;
 import mcjty.lib.builder.BlockBuilder;
 import mcjty.lib.tileentity.TickingTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -45,6 +48,8 @@ import static mcjty.lib.builder.TooltipBuilder.header;
 import static mcjty.lib.builder.TooltipBuilder.key;
 
 public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILockTarget {
+
+    private static final ResourceLocation PATTERN_TEXTURE = new ResourceLocation(Ariente.MODID, "textures/effects/doormarkers.png");
 
     public static final VoxelShape BLOCK_AABB = Shapes.box(0.0D, 0.0D, 0.0D, 1.0D, 1.0D/16.0, 1.0D);
     public static final VoxelShape OPEN_BLOCK_AABB = Shapes.empty();
@@ -295,30 +300,53 @@ public class DoorMarkerTile extends TickingTileEntity implements IGuiTile, ILock
         if (TAG_HELP.equals(tag)) {
             return GuiHelp.DOOR.createHelpGui(registry);
         }
-        return GuiHelp.DOOR.createPanel(registry)
-                .add(registry.iconToggle(1, 1, 1, 1).getter((player) -> isIconSelected(0)).icon(registry.image(4*16, 12*16)).selected(registry.image(64+4*16, 12*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(0)))
-                .add(registry.iconToggle(3, 1, 1, 1).getter((player) -> isIconSelected(1)).icon(registry.image(5*16, 12*16)).selected(registry.image(64+5*16, 12*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(1)))
-                .add(registry.iconToggle(5, 1, 1, 1).getter((player) -> isIconSelected(2)).icon(registry.image(6*16, 12*16)).selected(registry.image(64+6*16, 12*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(2)))
-                .add(registry.iconToggle(7, 1, 1, 1).getter((player) -> isIconSelected(3)).icon(registry.image(7*16, 12*16)).selected(registry.image(64+7*16, 12*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(3)))
+        IPanel panel = GuiHelp.DOOR.createPanel(registry);
+        for (int i = 0; i < 16; i++) {
+            int pattern = i;
+            panel.add(registry.iconToggle(1 + (i % 4) * 2, 1 + (i / 4) * 2, 1, 1)
+                    .name("pattern" + pattern)
+                    .getter(player -> isIconSelected(pattern))
+                    .icon(patternImage(pattern, false))
+                    .selected(patternImage(pattern, true))
+                    .hitEvent((component, player, entity, x, y) -> setIconIndex(pattern)));
+        }
+        return panel;
+    }
 
-                .add(registry.iconToggle(1, 3, 1, 1).getter((player) -> isIconSelected(4)).icon(registry.image(4*16, 13*16)).selected(registry.image(64+4*16, 13*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(4)))
-                .add(registry.iconToggle(3, 3, 1, 1).getter((player) -> isIconSelected(5)).icon(registry.image(5*16, 13*16)).selected(registry.image(64+5*16, 13*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(5)))
-                .add(registry.iconToggle(5, 3, 1, 1).getter((player) -> isIconSelected(6)).icon(registry.image(6*16, 13*16)).selected(registry.image(64+6*16, 13*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(6)))
-                .add(registry.iconToggle(7, 3, 1, 1).getter((player) -> isIconSelected(7)).icon(registry.image(7*16, 13*16)).selected(registry.image(64+7*16, 13*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(7)))
+    private static IImage patternImage(int pattern, boolean selected) {
+        // The door sheet contains four columns of patterns, followed by their highlighted variants.
+        return new IImage() {
+            @Override
+            public ResourceLocation getImage() {
+                return PATTERN_TEXTURE;
+            }
 
-                .add(registry.iconToggle(1, 5, 1, 1).getter((player) -> isIconSelected(8)).icon(registry.image(4*16, 14*16)).selected(registry.image(64+4*16, 14*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(8)))
-                .add(registry.iconToggle(3, 5, 1, 1).getter((player) -> isIconSelected(9)).icon(registry.image(5*16, 14*16)).selected(registry.image(64+5*16, 14*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(9)))
-                .add(registry.iconToggle(5, 5, 1, 1).getter((player) -> isIconSelected(10)).icon(registry.image(6*16, 14*16)).selected(registry.image(64+6*16, 14*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(10)))
-                .add(registry.iconToggle(7, 5, 1, 1).getter((player) -> isIconSelected(11)).icon(registry.image(7*16, 14*16)).selected(registry.image(64+7*16, 14*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(11)))
+            @Override
+            public int getWidth() {
+                return 128;
+            }
 
-                .add(registry.iconToggle(1, 7, 1, 1).getter((player) -> isIconSelected(12)).icon(registry.image(4*16, 15*16)).selected(registry.image(64+4*16, 15*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(12)))
-                .add(registry.iconToggle(3, 7, 1, 1).getter((player) -> isIconSelected(13)).icon(registry.image(5*16, 15*16)).selected(registry.image(64+5*16, 15*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(13)))
-                .add(registry.iconToggle(5, 7, 1, 1).getter((player) -> isIconSelected(14)).icon(registry.image(6*16, 15*16)).selected(registry.image(64+6*16, 15*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(14)))
-                .add(registry.iconToggle(7, 7, 1, 1).getter((player) -> isIconSelected(15)).icon(registry.image(7*16, 15*16)).selected(registry.image(64+7*16, 15*16)).hitEvent((component, player, entity1, x, y) -> setIconIndex(15)))
-                ;
+            @Override
+            public int getHeight() {
+                return 64;
+            }
+
+            @Override
+            public int getU() {
+                return (pattern % 4) * 16 + (selected ? 64 : 0);
+            }
+
+            @Override
+            public int getV() {
+                return (pattern / 4) * 16;
+            }
+        };
     }
 
     private void setIconIndex(int idx) {
+        if (isLocked()) {
+            return;
+        }
         this.iconIndex = idx;
         markDirtyClient();
     }

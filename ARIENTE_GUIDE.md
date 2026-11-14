@@ -981,6 +981,11 @@ Creative. The detection box extends three blocks horizontally in each direction,
 two below the marker, and six above it. A locked door stays closed. Door
 proximity is unrelated to the city alert system's player-detection rules.
 
+Right-click an unlocked marker to open its hologram. Choose one of the 16
+pattern previews to change that marker's door panels; the selected pattern is
+highlighted. The choice is saved with the marker. Configure each marker in a
+wide doorway separately.
+
 The marker's facing is the panel's normal, perpendicular to the opening's
 width. Generated wide doors derive that orientation from their authored row of
 markers before rotation/mirroring. Manually placed markers retain their placed
@@ -1331,6 +1336,11 @@ modifier and a -2.4 attack-speed modifier. The player's base attributes still
 contribute to displayed totals. It uses durability and is not configured like
 power armor.
 
+Use the Enhanced Energy Sabre blueprint in a Constructor or Auto Constructor
+to upgrade an ordinary Energy Sabre. It also needs a Circuit, 3 Silicon,
+5 Negarite Dust, 5 Posirite Dust, 3 Platinum Ingots and 2 Lithium Ingots. There
+is no crafting-table upgrade recipe.
+
 The Enhanced Energy Sabre adds the module/fuel system. Keep Inhibit for Master
 Soldiers: they regenerate strongly and are immune to fire and magic, so Fire is
 not a substitute for suppressing their regeneration. Its current superclass
@@ -1648,7 +1658,6 @@ actually present in the corresponding Forge item tag.
 | Ariente Pearl | `QQQ / QEQ / QQQ` | Q = Nether Quartz; E = an item in `forge:ender_pearls`. |
 | Constructor | `III / IPI / SSS` | I = iron ingot tag; P = platinum ingot tag; S = silver ingot tag. |
 | Blueprint Storage | `SGS / QCQ / MMM` | S = silver ingot tag; G = Glass Pane; Q = silicon dust tag; C = Chest; M = ordinary marble tag, mixed colors accepted. |
-| Enhanced Energy Sabre | `LLL / LSL / LLL` | L = lithium ingot tag; S = ordinary Energy Sabre. |
 
 The Constructor also has a blueprint recipe, separate from its ordinary
 crafting entry point. Raw Lithium, Raw Manganese, Raw Platinum and Raw Silver

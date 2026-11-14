@@ -70,11 +70,6 @@ public class Recipes extends BaseRecipeProvider {
                         .define('m', Registration.TAG_MARBLE)
                         .unlockedBy("silver", has(Registration.INGOT_SILVER.get())),
                 "sgs", "QCQ", "mmm");
-        build(consumer, ShapedRecipeBuilder.shaped(RecipeCategory.MISC, Registration.ENHANCED_ENERGY_SABRE.get())
-                        .define('x', Registration.TAG_INGOT_LITHIUM)
-                        .define('M', Registration.ENERGY_SABRE.get())
-                        .unlockedBy("sabre", has(Registration.ENERGY_SABRE.get())),
-                "xxx", "xMx", "xxx");
 
         for (MarbleColor color : MarbleColor.VALUES) {
             build(consumer, new ResourceLocation(Ariente.MODID, "marble_" + color.getSerializedName() + "_dye"), ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, DecorativeBlockModule.MARBLE_ITEMS.get(color).get())

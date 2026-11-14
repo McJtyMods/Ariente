@@ -1,0 +1,20 @@
+// Run from MultiWorkspace with -Pariente_runs :Ariente:runGameTestServer.
+gradle.afterProject { p ->
+    if (p.name == 'Ariente') {
+        p.sourceSets.gameTest {
+            java.setIncludes(['mcjty/ariente/DoorMarkerTests.java'])
+            resources.setIncludes(['data/ariente/structures/empty.nbt'])
+        }
+        p.sourceSets.gameTest.output.classesDirs.setFrom(p.layout.buildDirectory.dir('verification/door-marker-test-classes'))
+        p.sourceSets.gameTest.output.resourcesDir = p.file('build/verification/door-marker-test-resources')
+        p.tasks.named('compileGameTestJava') {
+            destinationDirectory.set(p.layout.buildDirectory.dir('verification/door-marker-test-classes'))
+        }
+        p.tasks.named('processGameTestResources') {
+            destinationDir = p.file('build/verification/door-marker-test-resources')
+        }
+        p.minecraft.runs.gameTestServer {
+            workingDirectory p.file('build/verification/door-marker-server')
+        }
+    }
+}

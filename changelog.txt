@@ -1,3 +1,7 @@
+1.20-1.0.2:
+- Restored the Door Marker's holographic pattern selector, with previews and a highlight for the selected pattern.
+- Removed the crafting-table Enhanced Energy Sabre upgrade to prevent recycling exploits. Use its Constructor blueprint instead.
+
 1.20-1.0.1:
 - Fixed all cable and connector variants failing to drop their matching items when broken.
 - Fixed missing drops for flux beams, ramps, slopes, fences, reinforced marble, flux glow blocks, and flat lights.
