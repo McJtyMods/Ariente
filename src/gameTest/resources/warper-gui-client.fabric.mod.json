@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "ariente_warper_gui_client_tests",
+  "version": "1",
+  "name": "Ariente Warper GUI Client Checks",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["mcjty.ariente.teleport.client.WarperGuiClientChecks"]
+  },
+  "depends": {"ariente": "*", "hologui": "*"}
+}

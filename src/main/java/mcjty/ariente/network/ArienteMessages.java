@@ -1,5 +1,6 @@
 package mcjty.ariente.network;
 
+import mcjty.ariente.teleport.PacketWarperPreview;
 import javax.annotation.Nonnull;
 import mcjty.ariente.Ariente;
 import mcjty.ariente.blocks.defense.PacketDamageForcefield;
@@ -51,6 +52,7 @@ public class ArienteMessages {
         ServerPlayNetworking.registerGlobalReceiver(PacketShipAction.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
         PayloadTypeRegistry.playC2S().register(PacketAutoFieldRequestRenderInfo.TYPE, PacketAutoFieldRequestRenderInfo.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(PacketAutoFieldRequestRenderInfo.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));
+        PayloadTypeRegistry.playS2C().register(PacketWarperPreview.TYPE, PacketWarperPreview.CODEC);
         PayloadTypeRegistry.playS2C().register(PacketDisplayData.TYPE, PacketDisplayData.CODEC);
         PayloadTypeRegistry.playC2S().register(PacketRequestDisplayData.TYPE, PacketRequestDisplayData.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(PacketRequestDisplayData.TYPE, (packet, context) -> packet.handle(new PayloadContext(context.player(), context.server())));

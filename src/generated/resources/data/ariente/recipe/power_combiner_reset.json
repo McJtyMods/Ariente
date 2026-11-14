@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ariente:power_combiner"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "ariente:power_combiner"
+  }
+}

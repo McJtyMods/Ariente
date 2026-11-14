@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ariente:sensor_item_node"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "ariente:sensor_item_node"
+  }
+}

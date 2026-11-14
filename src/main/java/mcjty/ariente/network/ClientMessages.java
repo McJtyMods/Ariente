@@ -1,5 +1,6 @@
 package mcjty.ariente.network;
 
+import mcjty.ariente.teleport.PacketWarperPreview;
 import mcjty.ariente.blocks.defense.PacketDamageForcefield;
 import mcjty.ariente.blocks.storagecube.PacketStorageCubeData;
 import mcjty.ariente.blocks.utility.autofield.PacketAutoFieldReturnRenderInfo;
@@ -12,6 +13,10 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 public final class ClientMessages {
 
     public static void register() {
+        ClientPlayNetworking.registerGlobalReceiver(
+                PacketWarperPreview.TYPE,
+                (packet, context) ->
+                        packet.handle(new PayloadContext(context.player(), context.client())));
         ClientPlayNetworking.registerGlobalReceiver(
                 PacketStorageCubeData.TYPE,
                 (packet, context) ->

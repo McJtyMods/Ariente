@@ -38,6 +38,15 @@ public class DisplayRenderType extends RenderType {
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));
 
+    public static final RenderType MINIATURE = create("ariente_warper_miniature", DefaultVertexFormat.POSITION_TEX_COLOR,
+            VertexFormat.Mode.QUADS, 65536, false, true, CompositeState.builder()
+                    .setShaderState(new ShaderStateShard(GameRenderer::getPositionTexColorShader))
+                    .setTextureState(new TextureStateShard(TextureAtlas.LOCATION_BLOCKS, false, false))
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setWriteMaskState(COLOR_DEPTH_WRITE)
+                    .createCompositeState(false));
+
     public static final RenderType ALIEN_FONT = create("ariente_alien_font", DefaultVertexFormat.POSITION_TEX_COLOR,
             VertexFormat.Mode.QUADS, 4096, false, false, CompositeState.builder()
                     .setShaderState(new ShaderStateShard(GameRenderer::getPositionTexColorShader))

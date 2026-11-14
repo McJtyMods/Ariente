@@ -1,5 +1,6 @@
 package mcjty.ariente.blocks.utility.camera;
 
+import java.util.ArrayList;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -190,6 +191,81 @@ public class CameraCapture {
         result.put("Palette", palette);
         result.putLongArray("Blocks", captured);
         result.put("Entities", entities);
+        return result;
+    }
+
+    /** A bounded cutaway around a Warper, using the same palette and geometry as cameras.
+     * Only surfaces connected to the arrival space are visible; sealed rooms stay hidden.
+     * Callers load the (at most nine) intersecting chunks once, never on a render tick.
+     */
+    public static CompoundTag scanWarper(Level level, BlockPos warper) {
+        int size = 32, volume = size * size * size;
+        byte[] cells = new byte[volume];
+        int[] queue = new int[volume];
+        BlockState[] states = new BlockState[volume];
+        int seed = 16 + 5 * size + 16 * size * size;
+        cells[seed] = (byte) (KNOWN | REACHED);
+        queue[0] = seed;
+        int tail = 1;
+        ConnectedView view = new ConnectedView(level, warper);
+        Map<BlockState, Integer> masks = new IdentityHashMap<>();
+        List<BlockPos> surfaces = new ArrayList<>();
+        for (int head = 0; head < tail; head++) {
+            int current = queue[head];
+            int x = current % size, y = current / size % size, z = current / (size * size);
+            for (Direction direction : DIRECTIONS) {
+                if ((cells[current] & 1 << direction.ordinal()) != 0) {
+                    continue;
+                }
+                int nx = x + direction.getStepX(), ny = y + direction.getStepY(), nz = z + direction.getStepZ();
+                if (nx < 0 || nx >= size || ny < 0 || ny >= size || nz < 0 || nz >= size) {
+                    continue;
+                }
+                int next = nx + ny * size + nz * size * size;
+                int flags = cells[next] & 255;
+                if ((flags & REACHED) != 0) {
+                    continue;
+                }
+                if ((flags & KNOWN) == 0) {
+                    BlockPos pos = warper.offset(nx - 16, ny - 4, nz - 16);
+                    BlockState state = level.isOutsideBuildHeight(pos) ? Blocks.AIR.defaultBlockState() : level.getBlockState(pos);
+                    states[next] = state;
+                    flags = KNOWN | closedFaces(state, view, pos, masks);
+                    cells[next] = (byte) flags;
+                    if (!state.isAir()) {
+                        surfaces.add(new BlockPos(nx, ny, nz));
+                    }
+                }
+                if ((flags & 1 << direction.getOpposite().ordinal()) == 0) {
+                    cells[next] = (byte) (flags | REACHED);
+                    queue[tail++] = next;
+                }
+            }
+        }
+        surfaces.sort(Comparator.comparingDouble(pos -> pos.distSqr(new BlockPos(16, 4, 16))));
+        ListTag palette = new ListTag();
+        Map<BlockState, Integer> ids = new HashMap<>();
+        LongArrayList blocks = new LongArrayList();
+        for (BlockPos pos : surfaces) {
+            BlockState state = states[pos.getX() + pos.getY() * size + pos.getZ() * size * size];
+            Integer id = ids.get(state);
+            // Bound both the palette and block data, even in pathological modded scenes.
+            if (id == null) {
+                if (palette.size() >= 512) {
+                    continue;
+                }
+                id = palette.size();
+                ids.put(state, id);
+                palette.add(NbtUtils.writeBlockState(state));
+            }
+            blocks.add(pack(pos.offset(-16, -4, -16), id));
+            if (blocks.size() == MAX_BLOCKS) {
+                break;
+            }
+        }
+        CompoundTag result = new CompoundTag();
+        result.put("Palette", palette);
+        result.putLongArray("Blocks", blocks.toLongArray());
         return result;
     }
 

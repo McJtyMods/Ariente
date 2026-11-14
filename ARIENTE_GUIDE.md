@@ -147,6 +147,15 @@ requiring no signal, and requiring a signal. This control enables a machine; it
 does not supply flux. Generators, the Auto Constructor, and Forcefield Generator
 use this mechanism. Check the chosen mode before diagnosing a power problem.
 
+To stack devices that retain data after breaking, put one device by itself in
+any crafting slot, including your inventory's 2x2 grid. The shapeless reset
+recipe returns one fresh device of the same type, which stacks with unused ones.
+**Resetting destroys all stored contents, fuel, installed Extreme Circuits,
+names, and saved settings.** Empty valuable contents before resetting.
+These recipes cover the generators, powered machines, storage devices, automation
+nodes, and configurable security devices whose drops preserve data. Cables,
+connectors, tanks, and other devices that already drop clean items need no reset.
+
 Default equipment bindings are:
 
 | Binding | Default | Purpose |
@@ -187,7 +196,7 @@ The Overworld entrance is a small underground room. By default, a chunk has a
 0.002 chance of being an entrance candidate. These rooms are separate from the
 large cities in the other dimension.
 
-Open the charged Warper's hologram and press **Warp**. Ariente arrival buildings
+Open the charged Warper's hologram and press **Warp to Ariente**. Ariente arrival buildings
 contain a return Warper that starts charged. Charge is currently an unlock
 threshold, not a per-trip fuel cost: normal travel does not decrement it.
 The server also checks the charge when Warp is pressed; an already open
@@ -195,9 +204,41 @@ hologram cannot bypass an entrance's current charge requirement.
 
 The return trip first tries the remembered entrance, provided its Warper and
 landing space remain usable. Otherwise it tries a valid Overworld respawn
-position and then world spawn. The Warper is a dimension-travel device, not a
-general menu for selecting arbitrary player-built teleport destinations.
-The remembered entrance survives reconnects, server restarts and death/respawn.
+position and then world spawn. This dimension-travel button remains available
+when a card destination is configured. The remembered entrance survives reconnects, server restarts and death/respawn.
+
+### Teleportation Cards and named Warpers
+
+Warpers can be made in the Constructor or Auto Constructor with a **rare Warper
+blueprint**. Each Warper requires 8 Ender Pearls, 2 Advanced Circuits, 2 Flux
+Capacitors, 8 Silver Ingots, 4 Platinum Ingots, 4 Lithium Ingots, 8 Silicon Dust,
+16 Negarite Dust and 16 Posirite Dust.
+
+The Constructor blueprint for a **Teleportation Card** uses four Ender Pearls,
+two Silver Ingots and one Circuit. Name a Warper in its hologram, then
+sneak-right-click it with the card to encode its address. Right-click the card
+to select from up to 64 destinations. The list shows names, coordinates and
+dimensions; selection refreshes the name and captures a static 32×32 3D preview.
+The list also refreshes names of already loaded Warpers when opened. The source
+Warper hologram and The One Probe show the destination name with its coordinates;
+TOP also shows the source Warper name.
+
+Right-click another Warper with the selected card to redirect it. Walk into the
+rotating miniature above its visible pad to travel. This also moves unmounted
+mobs and dropped items. Arrivals must leave the receiving pad before that pad
+can send them onward, avoiding loops. Destination Warpers and clear arrival space
+are checked on the server at travel time. A removed Warper invalidates travel;
+replacing it at the same coordinates restores existing card addresses.
+
+Setting a destination alone never starts a timer. After successful travel, the
+Warper clears its destination 600 ticks (30 seconds) after the last traveler.
+Every successful trip restarts that delay; failed trips do not. **Pin** prevents
+expiry and persists across restarts. **Unpin** uses the last travel time, clearing
+immediately if the delay has elapsed. **Clear** removes the card destination.
+Card travel works in all dimensions, including without Ariente World; the
+original charged dimension travel buttons are available only with the companion
+dimension installed: **Warp to Ariente** in the Overworld and **Warp to Overworld**
+in Ariente.
 
 ### Terrain, resources, and cities
 
@@ -981,6 +1022,11 @@ Creative. The detection box extends three blocks horizontally in each direction,
 two below the marker, and six above it. A locked door stays closed. Door
 proximity is unrelated to the city alert system's player-detection rules.
 
+Right-click an unlocked marker to open its hologram. Choose one of the 16
+pattern previews to change that marker's door panels; the selected pattern is
+highlighted. The choice is saved with the marker. Configure each marker in a
+wide doorway separately.
+
 The marker's facing is the panel's normal, perpendicular to the opening's
 width. Generated wide doors derive that orientation from their authored row of
 markers before rotation/mirroring. Manually placed markers retain their placed
@@ -1331,6 +1377,11 @@ modifier and a -2.4 attack-speed modifier. The player's base attributes still
 contribute to displayed totals. It uses durability and is not configured like
 power armor.
 
+Use the Enhanced Energy Sabre blueprint in a Constructor or Auto Constructor
+to upgrade an ordinary Energy Sabre. It also needs a Circuit, 3 Silicon,
+5 Negarite Dust, 5 Posirite Dust, 3 Platinum Ingots and 2 Lithium Ingots. There
+is no crafting-table upgrade recipe.
+
 The Enhanced Energy Sabre adds the module/fuel system. Keep Inhibit for Master
 Soldiers: they regenerate strongly and are immune to fire and magic, so Fire is
 not a substitute for suppressing their regeneration. Its current superclass
@@ -1648,7 +1699,6 @@ actually present in the corresponding common item tag.
 | Ariente Pearl | `QQQ / QEQ / QQQ` | Q = Nether Quartz; E = an item in `c:ender_pearls`. |
 | Constructor | `III / IPI / SSS` | I = iron ingot tag; P = platinum ingot tag; S = silver ingot tag. |
 | Blueprint Storage | `SGS / QCQ / MMM` | S = silver ingot tag; G = Glass Pane; Q = silicon dust tag; C = Chest; M = ordinary marble tag, mixed colors accepted. |
-| Enhanced Energy Sabre | `LLL / LSL / LLL` | L = lithium ingot tag; S = ordinary Energy Sabre. |
 
 The Constructor also has a blueprint recipe, separate from its ordinary
 crafting entry point. Raw Lithium, Raw Manganese, Raw Platinum and Raw Silver

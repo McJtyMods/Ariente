@@ -1,5 +1,6 @@
 package mcjty.ariente.client;
 
+import mcjty.ariente.teleport.client.WarperPreviewCache;
 import mcjty.ariente.ClientForgeEventHandlers;
 import mcjty.ariente.bindings.Binding;
 import mcjty.ariente.bindings.KeyInputHandler;
@@ -44,6 +45,7 @@ public final class FabricClientEvents {
     }
 
     public static void register() {
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> WarperPreviewCache.clear());
         ClientPickBlockGatherCallback.EVENT.register(
                 (player, hit) -> {
                     if (hit instanceof BlockHitResult blockHit

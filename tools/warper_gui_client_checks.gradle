@@ -1,0 +1,46 @@
+// Run from Multi21_fabric: ./gradlew :workspace:runClient -I Ariente/tools/warper_gui_client_checks.gradle
+// Set -Pwarper_gui_test_directory=<disposable game directory> (prefer /var/tmp).
+// Supply -Pwarper_gui_test_world=<existing disposable world> the first time to copy its metadata.
+gradle.afterProject { p ->
+    if (p.name == 'Ariente') {
+        p.sourceSets.create('warperGuiClientTest') {
+            java.srcDir 'src/gameTest/java'
+            java.include 'mcjty/ariente/teleport/client/WarperGuiClientChecks.java'
+            resources.srcDir 'src/gameTest/resources'
+            resources.include 'warper-gui-client.fabric.mod.json'
+            compileClasspath += p.sourceSets.main.output + p.sourceSets.main.compileClasspath
+            runtimeClasspath += p.sourceSets.main.output + p.sourceSets.main.runtimeClasspath
+        }
+        p.configurations.warperGuiClientTestImplementation.extendsFrom(p.configurations.implementation)
+        p.tasks.named('processWarperGuiClientTestResources') {
+            rename 'warper-gui-client.fabric.mod.json', 'fabric.mod.json'
+        }
+    }
+    if (p.name == 'workspace') {
+        def ariente = p.project(':Ariente')
+        p.loom.mods.register('ariente_warper_gui_client_tests') { sourceSet ariente.sourceSets.warperGuiClientTest }
+        def directory = p.file(p.property('warper_gui_test_directory'))
+        p.loom.runs.client {
+            runDir p.projectDir.toPath().relativize(directory.toPath()).toString()
+            programArgs '--quickPlaySingleplayer', 'WarperGuiCheck', '--width', '640', '--height', '480'
+        }
+        p.tasks.named('runClient', JavaExec) {
+            dependsOn ariente.tasks.named('warperGuiClientTestClasses')
+            doFirst {
+                def world = new File(directory, 'saves/WarperGuiCheck')
+                if (!new File(world, 'level.dat').isFile()) {
+                    def template = p.findProperty('warper_gui_test_world') ? p.file(p.property('warper_gui_test_world')) : null
+                    if (template == null || !new File(template, 'level.dat').isFile()) {
+                        throw new GradleException('Supply -Pwarper_gui_test_world=<existing disposable world> to initialize WarperGuiCheck')
+                    }
+                    p.copy {
+                        from template
+                        into world
+                        exclude 'session.lock', 'region/**', 'entities/**', 'poi/**', 'dimensions/**', 'DIM-1/**', 'DIM1/**'
+                    }
+                }
+            }
+            classpath += ariente.sourceSets.warperGuiClientTest.output
+        }
+    }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ariente:round_robin_node"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "ariente:round_robin_node"
+  }
+}
