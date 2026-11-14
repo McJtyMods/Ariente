@@ -6,6 +6,11 @@
   "pages": [
     {
       "type": "patchouli:text",
+      "title": "Build a Warper",
+      "text": "Make a Warper in the Constructor or Auto Constructor using a rare Warper blueprint: 8 Ender Pearls, 2 Advanced Circuits, 2 Flux Capacitors, 8 Silver Ingots, 4 Platinum Ingots, 4 Lithium Ingots, 8 Silicon Dust, 16 Negarite Dust and 16 Posirite Dust.$(br2)This produces one fresh Warper. Name and configure it with a Teleportation Card as described on the following pages."
+    },
+    {
+      "type": "patchouli:text",
       "title": "Record destinations",
       "text": "Make a Teleportation Card in the Constructor using its blueprint: 4 Ender Pearls, 2 Silver Ingots and 1 Circuit. There is no crafting-table recipe.$(br2)Name a Warper in its hologram, then sneak-right-click it with the card to record its name, coordinates and dimension. A card holds up to 64 destinations."
     },
@@ -26,7 +31,7 @@
     }
   ],
   "extra_recipe_mappings": {
-    "ariente:teleportation_card": 0,
+    "ariente:teleportation_card": 1,
     "ariente:warper": 0
   }
 }

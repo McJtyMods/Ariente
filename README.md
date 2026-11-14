@@ -54,6 +54,9 @@ disposable server world are isolated under `build/verification/`.
 
 ## Warper destinations (1.20.1 Forge)
 
+Warpers can be made with a rare Constructor blueprint; see the
+[Warper material list](ARIENTE_GUIDE.md#teleportation-cards-and-named-warpers).
+
 Teleportation Cards are Constructor blueprint recipes: four Ender Pearls, two
 Silver Ingots and one Circuit. Name a Warper in its hologram, then sneak-right-click
 it with the card to save its address. Right-click the card to choose among up to

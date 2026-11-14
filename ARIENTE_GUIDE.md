@@ -209,6 +209,11 @@ when a card destination is configured. The remembered entrance survives reconnec
 
 ### Teleportation Cards and named Warpers
 
+Warpers can be made in the Constructor or Auto Constructor with a **rare Warper
+blueprint**. Each Warper requires 8 Ender Pearls, 2 Advanced Circuits, 2 Flux
+Capacitors, 8 Silver Ingots, 4 Platinum Ingots, 4 Lithium Ingots, 8 Silicon Dust,
+16 Negarite Dust and 16 Posirite Dust.
+
 The Constructor blueprint for a **Teleportation Card** uses four Ender Pearls,
 two Silver Ingots and one Circuit. Name a Warper in its hologram, then
 sneak-right-click it with the card to encode its address. Right-click the card
