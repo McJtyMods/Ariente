@@ -1,4 +1,5 @@
 1.20-1.0.2:
+- Added shapeless reset recipes for devices that retain saved data, so they can stack again. Resetting discards contents, fuel, upgrades, and settings.
 - Restored the Door Marker's holographic pattern selector, with previews and a highlight for the selected pattern.
 - Removed the crafting-table Enhanced Energy Sabre upgrade to prevent recycling exploits. Use its Constructor blueprint instead.
 

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ariente:negarite_generator"
+    }
+  ],
+  "result": {
+    "item": "ariente:negarite_generator"
+  }
+}

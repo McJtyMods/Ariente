@@ -147,6 +147,15 @@ requiring no signal, and requiring a signal. This control enables a machine; it
 does not supply flux. Generators, the Auto Constructor, and Forcefield Generator
 use this mechanism. Check the chosen mode before diagnosing a power problem.
 
+To stack devices that retain data after breaking, put one device by itself in
+any crafting slot, including your inventory's 2x2 grid. The shapeless reset
+recipe returns one fresh device of the same type, which stacks with unused ones.
+**Resetting destroys all stored contents, fuel, installed Extreme Circuits,
+names, and saved settings.** Empty valuable contents before resetting.
+These recipes cover the generators, powered machines, storage devices, automation
+nodes, and configurable security devices whose drops preserve data. Cables,
+connectors, tanks, and other devices that already drop clean items need no reset.
+
 Default equipment bindings are:
 
 | Binding | Default | Purpose |

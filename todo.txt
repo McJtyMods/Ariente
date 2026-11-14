@@ -5,4 +5,4 @@
 - Much better loot in the more difficult dungeons
 - Test the extreme circuit
 - Objects in holo chest seem to fade in/out all at the same time. Randomize this more
-- Energy for flux ship is obscured by ship hull
+- Flux beam junctions?

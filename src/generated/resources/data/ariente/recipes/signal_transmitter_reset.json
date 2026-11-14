@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ariente:signal_transmitter"
+    }
+  ],
+  "result": {
+    "item": "ariente:signal_transmitter"
+  }
+}

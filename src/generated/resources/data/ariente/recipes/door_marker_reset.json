@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ariente:door_marker"
+    }
+  ],
+  "result": {
+    "item": "ariente:door_marker"
+  }
+}

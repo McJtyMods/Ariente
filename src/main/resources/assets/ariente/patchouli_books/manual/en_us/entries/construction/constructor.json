@@ -13,6 +13,12 @@
       "type": "patchouli:text",
       "title": "Make your first item",
       "text": "$(li)Carry the required ingredients in your inventory.$(li)Right-click the Constructor.$(li)The top grid shows blueprints from adjacent Blueprint Storage. The lower grid shows your whole inventory, with a separated hotbar. Needed ingredients are bright; other items are dimmed and cannot be selected.$(li)Hover over a result to check what is missing.$(li)Double-click its blueprint to craft.$(br2)The result goes into your inventory. Leave room so it does not drop at your feet. Manual construction needs no flux supply."
+    },
+    {
+      "type": "patchouli:crafting",
+      "title": "Reset devices for stacking",
+      "recipe": "ariente:auto_constructor_reset",
+      "text": "Put one device that retains saved data into any crafting slot to get a fresh, stackable device of the same type. This also works in your inventory's 2x2 grid.$(br2)$(bold)Resetting destroys stored contents, fuel, installed Extreme Circuits, names, and settings.$() Empty valuable contents first. Cables, connectors, and tanks already drop clean items and need no reset."
     }
   ],
   "extra_recipe_mappings": {

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ariente:output_item_node"
+    }
+  ],
+  "result": {
+    "item": "ariente:output_item_node"
+  }
+}

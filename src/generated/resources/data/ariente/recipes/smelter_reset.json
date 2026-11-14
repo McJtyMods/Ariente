@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "ariente:smelter"
+    }
+  ],
+  "result": {
+    "item": "ariente:smelter"
+  }
+}
