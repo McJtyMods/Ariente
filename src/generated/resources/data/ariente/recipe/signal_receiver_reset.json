@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "ariente:signal_receiver"
+  ],
+  "result": {
+    "id": "ariente:signal_receiver"
+  }
+}

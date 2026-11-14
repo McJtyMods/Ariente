@@ -318,5 +318,14 @@
   "message.ariente.automation_field.header": "Automation Field",
   "jei.ariente.constructor": "Constructor",
   "jei.ariente.blueprint_required": "Place this blueprint in an adjacent Blueprint Storage",
-  "key.category.ariente.controls": "Ariente"
+  "key.category.ariente.controls": "Ariente",
+  "item.ariente.teleportation_card": "Teleportation Card",
+  "message.ariente.card.encoded": "Warper destination stored.",
+  "message.ariente.card.full": "This card already holds 64 destinations.",
+  "message.ariente.card.invalid": "Destination unavailable: the Warper must exist, and cannot target itself.",
+  "message.ariente.card.use": "Right click: select a destination",
+  "message.ariente.card.encode": "Sneak + right-click a Warper: add destination",
+  "message.ariente.card.apply": "Right-click a Warper: apply selected destination",
+  "message.ariente.card.count": "Destinations: %s / %s",
+  "message.ariente.card.selected": "Selected: %s"
 }

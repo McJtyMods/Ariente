@@ -20,6 +20,9 @@
     "client": [
       "mcjty.ariente.setup.ClientSetup"
     ],
+    "jei_mod_plugin": [
+      "mcjty.ariente.compat.jei.JeiPlugin"
+    ],
     "fabric-datagen": [
       "mcjty.ariente.datagen.DataGenerators"
     ],
@@ -35,7 +38,7 @@
     "forgeconfigapiport": ">=26.2.1",
     "team_reborn_energy": ">=5.0.0",
     "mcjtylib": ">=26.2-10.0.3-fabric",
-    "hologui": ">=26.2-4.0.0-fabric"
+    "hologui": ">=26.2-4.0.1-fabric"
   },
   "suggests": {
     "theoneprobe": "*",

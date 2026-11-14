@@ -1,5 +1,12 @@
 package mcjty.ariente.display.client;
 
+import net.minecraft.client.resources.model.geometry.QuadCollection;
+import net.minecraft.client.resources.model.SimpleModelWrapper;
+import net.fabricmc.fabric.api.client.renderer.v1.model.FabricBlockStateModel;
+import net.fabricmc.fabric.api.client.renderer.v1.Renderer;
+import mcjty.lib.client.AbstractDynamicBakedModel;
+import mcjty.lib.client.RenderBufferSource;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.fabric.api.transfer.v1.client.fluid.FluidVariantRendering;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 
@@ -47,12 +54,14 @@ public class CameraDisplayRenderer {
 
     private static final int MAX_QUADS = 131072;
     private static final int MIN_VIEW_SPAN = 16;
+    private static final Map<Object, Miniature> MINIATURES = new WeakHashMap<>();
     private static final Map<InstalledModule, Mesh> CACHE = new WeakHashMap<>();
     private static final Comparator<Face> DEPTH_ORDER = Comparator.comparingDouble(face -> face.depth);
     private static final ByteBufferBuilder PERSPECTIVE_MEMORY = new ByteBufferBuilder(262144);
 
     public static void clearCache() {
         CACHE.clear();
+        MINIATURES.clear();
         CameraPerspectiveRenderer.clear();
         LiveCameraRenderer.clear();
     }
@@ -148,8 +157,11 @@ public class CameraDisplayRenderer {
     }
 
     private static Mesh build(InstalledModule module, double startedAt) {
+        return build(module.snapshot(), module.snapshotVersion(), startedAt);
+    }
+
+    private static Mesh build(CompoundTag data, int version, double startedAt) {
         Minecraft mc = Minecraft.getInstance();
-        CompoundTag data = module.snapshot();
         ListTag paletteTag = data.getListOrEmpty("Palette");
         List<BlockState> palette = new ArrayList<>();
         for (int i = 0; i < Math.min(CameraCapture.MAX_BLOCKS, paletteTag.size()); i++) {
@@ -178,8 +190,6 @@ public class CameraDisplayRenderer {
             }
             BlockState state = entry.getValue();
             BlockStateModel model = mc.getModelManager().getBlockStateModelSet().get(state);
-            List<BlockStateModelPart> parts = new ArrayList<>();
-            model.collectParts(random, parts);
             boolean translucent = translucentStates.computeIfAbsent(state,
                     key -> (model.materialFlags() & BakedQuad.FLAG_TRANSLUCENT) != 0);
             if (state.getRenderShape() != RenderShape.MODEL) {
@@ -203,6 +213,9 @@ public class CameraDisplayRenderer {
                 }
                 continue;
             }
+            List<BlockStateModelPart> parts = new ArrayList<>();
+            random.setSeed(state.getSeed(pos));
+            collectSnapshotParts(model, pos, state, random, parts);
             for (int side = 0; side <= 6; side++) {
                 Direction direction = side == 6 ? null : Direction.values()[side];
                 BlockState neighbor = direction == null ? null : scene.get(pos.relative(direction));
@@ -253,7 +266,61 @@ public class CameraDisplayRenderer {
             box(faces, x - .2, y - .4, z - .2, x + .2, y + .4, z + .2, white, entity.getIntOr("Color", 0), false);
         }
         box(faces, -.15, -.15, -.15, .15, .15, .15, white, 0x77ffff, false);
-        return new Mesh(module.snapshotVersion(), faces, startedAt);
+        return new Mesh(version, faces, startedAt);
+    }
+
+    /** Preserve the captured state when querying Fabric's context-sensitive models. */
+    private static void collectSnapshotParts(BlockStateModel model, BlockPos pos, BlockState state,
+                                             RandomSource random, List<BlockStateModelPart> parts) {
+        // Snapshots contain no block entity data. Dynamic models use their static fallback with the real state.
+        if (model instanceof AbstractDynamicBakedModel dynamic) {
+            dynamic.collectParts(BlockAndTintGetter.EMPTY, pos, state, random, parts);
+            return;
+        }
+        // Fabric models can supply geometry only through emitQuads, without implementing vanilla collectParts.
+        QuadCollection.Builder quads = new QuadCollection.Builder();
+        var emitter = Renderer.get().quadEmitter(quad -> {
+            var atlas = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(quad.atlas().getId());
+            var baked = quad.toBakedQuad(atlas.spriteFinder().find(quad));
+            if (quad.cullFace() == null) {
+                quads.addUnculledFace(baked);
+            } else {
+                quads.addCulledFace(quad.cullFace(), baked);
+            }
+        });
+        ((FabricBlockStateModel) model).emitQuads(emitter, BlockAndTintGetter.EMPTY, pos, state, random, side -> false);
+        parts.add(new SimpleModelWrapper(quads.build(), true, model.particleMaterial()));
+    }
+
+    /** Reuse baked camera surfaces in actual 3D, with depth testing and a stable pivot. */
+    public static void renderMiniature(PoseStack poses, RenderBufferSource buffer, Object owner, CompoundTag data, float diameter, int alpha) {
+        if (Minecraft.getInstance().level == null) {
+            return;
+        }
+        Miniature miniature = MINIATURES.get(owner);
+        if (miniature == null || miniature.data != data) {
+            miniature = new Miniature(data, build(data, 0, 0));
+            MINIATURES.put(owner, miniature);
+        }
+        Mesh mesh = miniature.mesh;
+        poses.pushPose();
+        float scale = diameter / (2 * mesh.radius);
+        poses.scale(scale, scale, scale);
+        poses.translate(-mesh.center.x, -mesh.center.y, -mesh.center.z);
+        Matrix4f pose = poses.last().pose();
+        VertexConsumer vertices = buffer.getBuffer(DisplayRenderType.MINIATURE);
+        for (Face face : mesh.faces) {
+            for (int i = 0; i < 4; i++) {
+                Point p = face.points[i];
+                int rgb = face.colors[i];
+                vertices.addVertex(pose, p.x(), p.y(), p.z()).setUv(p.u(), p.v())
+                        .setColor(rgb >> 16 & 255, rgb >> 8 & 255, rgb & 255, alpha);
+            }
+        }
+        poses.popPose();
+    }
+
+    private record Miniature(CompoundTag data, Mesh mesh) {
     }
 
     private static void box(List<Face> faces, double x0, double y0, double z0, double x1, double y1, double z1,
